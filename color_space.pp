@@ -44,9 +44,9 @@ be marked as bad.
 sub rgb_to_xyz {
     my ($rgb, $s) = @_;
 
-    my $m = pdl $RGB_SPACE->{$s}{m};
+    my @m = pdl( $RGB_SPACE->{$s}{m} )->dog;
 
-    return _rgb_to_xyz( $rgb, $RGB_SPACE->{$s}{gamma}, $m );
+    return _rgb_to_xyz( $rgb, $RGB_SPACE->{$s}{gamma}, @m );
 }
 
 
@@ -200,39 +200,23 @@ BADDOC
 
 
 pp_def('_rgb_to_xyz',
-    Pars => 'double rgb(n=3); double gamma(); double m(i=3,j=3); double [o]xyz(d=3)',
+    Pars => 'double rgb(c=3); double gamma(); double l(i=3); double m(i=3); double n(i=3); double [o]xyz(d=3)',
     Code => '
-        double *mm[3];
-        loop (i) %{
-            loop (j) %{
-                *(mm[i]+j) = $m();
-            %}
-        %}
-        threadloop %{
-            rgb2xyz($P(rgb), $gamma(), mm, $P(xyz));
-        %}
+        rgb2xyz($P(rgb), $gamma(), $P(l), $P(m), $P(n), $P(xyz));
     ',
 
     HandleBad => 1,
     BadCode => '
-        double *mm[3];
-        loop (i) %{
-            loop (j) %{
-                *(mm[i]+j) = $m();
+        /* First check for bad values */
+        if ($ISBAD(rgb(c=>0)) || $ISBAD(rgb(c=>1)) || $ISBAD(rgb(c=>2))) {
+            loop (d) %{
+                $SETBAD(xyz());
             %}
-        %}
-        threadloop %{
-            /* First check for bad values */
-            if ($ISBAD(rgb(n=>0)) || $ISBAD(rgb(n=>1)) || $ISBAD(rgb(n=>2))) {
-                loop (d) %{
-                    $SETBAD(xyz());
-                %}
-                /* skip to the next xyz triple */
-            }
-            else {
-                rgb2xyz($P(rgb), $gamma(), mm, $P(xyz));
-            }
-        %}
+            /* skip to the next xyz triple */
+        }
+        else {
+        	rgb2xyz($P(rgb), $gamma(), $P(l), $P(m), $P(n), $P(xyz));
+        }
     ',
 );
 

@@ -57,7 +57,6 @@ our $RGB_SPACE = {
                                  ],
                           'white_point' => 'D65'
                         },
-          'CIE ITU' => 'PAL/SECAM',
           'Adobe RGB (1998)' => {
                                   'gamma' => '2.2',
                                   'mstar' => [
@@ -400,9 +399,6 @@ our $RGB_SPACE = {
                                 ],
                          'white_point' => 'D65'
                        },
-          'PAL' => 'PAL/SECAM',
-          '709' => 'sRGB',
-          'SMPTE' => 'SMPTE-C',
           'CIE' => {
                      'gamma' => '2.2',
                      'mstar' => [
@@ -479,7 +475,6 @@ our $RGB_SPACE = {
                                  ],
                           'white_point' => 'D50'
                         },
-          'Apple' => 'Apple RGB',
           'BestRGB' => {
                          'gamma' => '2.2',
                          'mstar' => [
@@ -556,8 +551,6 @@ our $RGB_SPACE = {
                                 ],
                          'white_point' => 'D50'
                        },
-          'Adobe' => 'Adobe RGB (1998)',
-          '601' => 'NTSC',
           'Beta RGB' => {
                           'gamma' => '2.2',
                           'mstar' => [
@@ -634,9 +627,19 @@ our $RGB_SPACE = {
                             ],
                      'white_point' => 'D50'
                    },
-          'CIE Rec 709' => 'sRGB',
-          'CIE Rec 601' => 'NTSC'
 };
+
+
+# aliases
+$RGB_SPACE->{'Adobe'} = $RGB_SPACE->{'Adobe RGB (1998)'};
+$RGB_SPACE->{'601'}   = $RGB_SPACE->{'NTSC'};
+$RGB_SPACE->{'Apple'} = $RGB_SPACE->{'Apple RGB'};
+$RGB_SPACE->{'CIE ITU'} = $RGB_SPACE->{'PAL/SECAM'};
+$RGB_SPACE->{'PAL'} = $RGB_SPACE->{'PAL/SECAM'};
+$RGB_SPACE->{'709'} = $RGB_SPACE->{'sRGB'};
+$RGB_SPACE->{'SMPTE'} = $RGB_SPACE->{'SMPTE-C'};
+$RGB_SPACE->{'CIE Rec 709'} = $RGB_SPACE->{'sRGB'};
+$RGB_SPACE->{'CIE Rec 601'} = $RGB_SPACE->{'NTSC'};
 
 
 our $WHITE_POINT = {

@@ -3,10 +3,6 @@ use warnings;
 
 use Test::More;
 
-BEGIN {
-	plan tests => 4;
-}
-
 use PDL::LiteF;
 use PDL::Graphics::ColorSpace;
 
@@ -45,3 +41,24 @@ sub tapprox {
 	$ans = pdl(255,10,50);
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1 ) or diag($a, $ans);
 }
+
+# rgb_to_xyz
+{   
+	my $rgb = pdl( [255,255,255],[0,0,0],[255,10,50],[1,48,199] );
+	my $a   = rgb_to_xyz( $rgb / 255, 'sRGB' );
+
+	my $ans = pdl( [0.950467757575757, 1, 1.08897436363636],
+		           [0,0,0],
+		           [0.419265223936783, 0.217129144548417, 0.0500096992920757],
+		           [0.113762127389896, 0.0624295703768394, 0.546353858701224] );
+
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_xyz sRGB' ) or diag($a, $ans);
+
+	$rgb = pdl(255, 10, 50);
+	$a = rgb_to_xyz( $rgb/255, 'Adobe' );
+	$ans = pdl( 0.582073320819542, 0.299955362786115, 0.0546021884576833 ); 
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_xyz Adobe' ) or diag($a, $ans);
+}
+
+
+done_testing();

@@ -11,9 +11,9 @@ struct pixel {
 /*** function defs ***/
 double  rgb_quant( double p, double q, double h );
 void    rgb2hsl( double *, double * );
-void    rgb2xyz ( double *rgb, double gamma, double **m, double *xyz );
+void    rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz );
 double  _apow( double a, double p );
-void    _mult_v3_m33( struct pixel *p, double *m[], double *result );
+void    _mult_v3_m33( struct pixel *p, double *m0, double *m1, double *m2, double *result );
 
 
 /* ~~~~~~~~~~:> */
@@ -79,7 +79,7 @@ void rgb2hsl( double *rgb, double *hsl )  {
 }
 
 
-void rgb2xyz ( double *rgb, double gamma, double *m[], double *xyz )
+void rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz )
 {
 	/* weighted RGB */
 	struct pixel  p = { *rgb, *(rgb+1), *(rgb+2) };
@@ -101,7 +101,7 @@ void rgb2xyz ( double *rgb, double gamma, double *m[], double *xyz )
 		p.c = _apow(p.c, gamma);
 	}
 
-	_mult_v3_m33( &p, m, xyz );
+	_mult_v3_m33( &p, m0, m1, m2, xyz );
 }
 
 
@@ -109,14 +109,12 @@ double _apow (double a, double p) {
 	return a >= 0?   pow(a, p) : -pow(-a, p);
 }
 
-
-void _mult_v3_m33( struct pixel *p, double **m, double *result ) {
-	*result     = p->a  *  *(*m)    +  p->b  *  *(*(m+1))    +  p->c  *  *(*(m+2));
-	*(result+1) = p->a  *  *(*m+1)  +  p->b  *  *(*(m+1)+1)  +  p->c  *  *(*(m+2)+1);
-	*(result+2) = p->a  *  *(*m+2)  +  p->b  *  *(*(m+1)+2)  +  p->c  *  *(*(m+2)+2);
+void _mult_v3_m33( struct pixel *p, double *m0, double *m1, double *m2, double *result )
+{
+	*result     = p->a  *  *m0      +  p->b  *  *m1      +  p->c  *  *m2;
+	*(result+1) = p->a  *  *(m0+1)  +  p->b  *  *(m1+1)  +  p->c  *  *(m2+1);
+	*(result+2) = p->a  *  *(m0+2)  +  p->b  *  *(m1+2)  +  p->c  *  *(m2+2);
 }
-
-
 
 
 
