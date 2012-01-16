@@ -1,6 +1,9 @@
 #include <stdio.h>
 #include <math.h>
 
+#define epsilon   0.008856
+#define kappa   903.3
+
 struct pixel {
 	double a;
 	double b;
@@ -14,6 +17,8 @@ void    rgb2hsl( double *, double * );
 void    rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz );
 double  _apow( double a, double p );
 void    _mult_v3_m33( struct pixel *p, double *m0, double *m1, double *m2, double *result );
+void    xyY2xyz( double *xyY, double *xyz );
+void    xyz2lab( double *xyz, double *w, double *lab );
 
 
 /* ~~~~~~~~~~:> */
@@ -116,6 +121,40 @@ void _mult_v3_m33( struct pixel *p, double *m0, double *m1, double *m2, double *
 	*(result+2) = p->a  *  *(m0+2)  +  p->b  *  *(m1+2)  +  p->c  *  *(m2+2);
 }
 
+
+void xyY2xyz (double *xyY, double *xyz)
+{
+
+	*(xyz+1) = *(xyY+2);
+
+	if ( *(xyY+1) != 0.0 ) {
+		*xyz     = *xyY  *  *(xyY+2)  /  *(xyY+1);
+		*(xyz+2) = (1 - *xyY - *(xyY+1))  *  *(xyY+2)  /  *(xyY+1);
+	}
+	else {
+		*xyz = *(xyz+1) = *(xyz+2) = 0;
+	}
+}
+
+
+void xyz2lab (double *xyz, double *w, double *lab)
+{
+	double xr, yr, zr;
+
+	xr = *xyz / *w;
+	yr = *(xyz+1) / *(w+1);
+	zr = *(xyz+2) / *(w+2);
+
+	double fx, fy, fz;
+
+	fx = (xr > epsilon)?  pow(xr, 1/3) : (kappa * xr + 16) / 116;
+	fy = (yr > epsilon)?  pow(yr, 1/3) : (kappa * yr + 16) / 116;
+	fz = (zr > epsilon)?  pow(zr, 1/3) : (kappa * zr + 16) / 116;
+
+	*lab     = 116 * fy - 16;
+	*(lab+1) = 500 * (fx - fy);
+	*(lab+2) = 200 * (fy - fz);
+}
 
 
 

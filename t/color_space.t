@@ -60,5 +60,12 @@ sub tapprox {
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_xyz Adobe' ) or diag($a, $ans);
 }
 
+# xyY_to_xyz
+{
+	my $xyY = pdl(0.312713, 0.329016, 1);
+	my $a   = xyY_to_xyz($xyY);
+	my $ans = pdl(0.950449218275099, 1, 1.08891664843047);
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'xyY_to_xyz' ) or diag($a, $ans);
+}
 
 done_testing();

@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz');
+pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyY_to_xyz', 'xyz_to_lab');
 
 pp_addpm({At=>'Top'}, <<'EOD');
 
@@ -41,6 +41,12 @@ be marked as bad.
 
 =cut
 
+=head2 rgb_to_xyz
+
+	my $xyz = rgb_to_xyz( $rgb, 'sRGB' );
+
+=cut
+
 sub rgb_to_xyz {
     my ($rgb, $s) = @_;
 
@@ -49,6 +55,20 @@ sub rgb_to_xyz {
     return _rgb_to_xyz( $rgb, $RGB_SPACE->{$s}{gamma}, @m );
 }
 
+
+=head2 xyz_to_lab
+
+	my $xyz = rgb_to_xyz( $rgb, 'sRGB' );
+
+=cut
+
+sub xyz_to_lab {
+	my ($xyz, $space) = @_;
+
+	my $w = pdl $WHITE_POINT->{ $RGB_SPACE->{$space}{white_point} };
+
+	return _xyz_to_lab( $xyz, $w );
+}
 
 EOD
 
@@ -142,10 +162,6 @@ BADDOC
 );
 
 
-=head2 rgb_to_hsl
-
-=cut
-
 pp_def('rgb_to_hsl',
     Pars => 'double rgb(n=3); double [o]hsl(m=3)',
     Code => '
@@ -198,6 +214,27 @@ be marked as bad.
 BADDOC
 );
 
+pp_def('xyY_to_xyz',
+    Pars => 'double xyY(c=3); double [o]xyz(c=3)',
+    Code => '
+		xyY2xyz($P(xyY), $P(xyz));
+    ',
+
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(xyY(c=>0)) || $ISBAD(xyY(c=>1)) || $ISBAD(xyY(c=>2))) {
+            loop (c) %{
+                $SETBAD(xyz());
+            %}
+            /* skip to the next hsl triple */
+        }
+        else {
+			xyY2xyz($P(xyY), $P(xyz));
+        }
+    ',
+);
+
 
 pp_def('_rgb_to_xyz',
     Pars => 'double rgb(c=3); double gamma(); double l(i=3); double m(i=3); double n(i=3); double [o]xyz(d=3)',
@@ -216,6 +253,42 @@ pp_def('_rgb_to_xyz',
         }
         else {
         	rgb2xyz($P(rgb), $gamma(), $P(l), $P(m), $P(n), $P(xyz));
+        }
+    ',
+);
+
+
+pp_def('_xyz_to_lab',
+    Pars => 'double xyz(c=3); double w(d=2);  double [o]lab(c=3)',
+    Code => '
+		/* construct white point */
+		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+		double xyz_white[3];
+		xyY2xyz( &xyY, &xyz_white );
+
+		threadloop %{
+	        xyz2lab( $P(xyz), &xyz_white, $P(lab) );
+		%}
+    ',
+
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(xyz(c=>0)) || $ISBAD(xyz(c=>1)) || $ISBAD(xyz(c=>2))) {
+            loop (c) %{
+                $SETBAD(lab());
+            %}
+            /* skip to the next xyz triple */
+        }
+        else {
+			/* construct white point */
+			double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+			double xyz_white[3];
+			xyY2xyz( &xyY, &xyz_white );
+
+			threadloop %{
+				xyz2lab( $P(xyz), &xyz_white, $P(lab) );
+			%}
         }
     ',
 );
