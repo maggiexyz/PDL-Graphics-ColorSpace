@@ -51,13 +51,13 @@ void rgb2hsl( double *rgb, double *hsl )  {
 	double sum   = max + min;
 
 	/* luminance */
-	*(hsl+2) = sum / 2;
+	*(hsl+2) = sum / 2.0;
 	
 	/* set up a greyscale if rgb values are identical */
 	/* Note: automatically includes max = 0 */
-	if (delta == 0) {
-		*hsl = 0;
-		*(hsl+1) = 0;
+	if (delta == 0.0) {
+		*hsl = 0.0;
+		*(hsl+1) = 0.0;
 	}
 	else {
 		/* satuaration */
@@ -65,7 +65,7 @@ void rgb2hsl( double *rgb, double *hsl )  {
 			*(hsl+1) = delta / sum;
 		}
 		else {
-			*(hsl+1) = delta / (2 - sum);
+			*(hsl+1) = delta / (2.0 - sum);
 		}
 		
 		/* compute hue */
@@ -73,13 +73,13 @@ void rgb2hsl( double *rgb, double *hsl )  {
 			*hsl = (g - b) / delta;
 		}
 		else if (g == max) {
-			*hsl = 2 + (b - r) / delta;
+			*hsl = 2.0 + (b - r) / delta;
 		}
 		else {
-			*hsl = 4 + (r - g) / delta;
+			*hsl = 4.0 + (r - g) / delta;
 		}
-		*hsl *= 60;
-		if (*hsl < 0) *hsl += 360;
+		*hsl *= 60.0;
+		if (*hsl < 0.0) *hsl += 360.0;
     }
 }
 
@@ -111,7 +111,7 @@ void rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, dou
 
 
 double _apow (double a, double p) {
-	return a >= 0?   pow(a, p) : -pow(-a, p);
+	return a >= 0.0?   pow(a, p) : -pow(-a, p);
 }
 
 void _mult_v3_m33( struct pixel *p, double *m0, double *m1, double *m2, double *result )
@@ -129,10 +129,10 @@ void xyY2xyz (double *xyY, double *xyz)
 
 	if ( *(xyY+1) != 0.0 ) {
 		*xyz     = *xyY  *  *(xyY+2)  /  *(xyY+1);
-		*(xyz+2) = (1 - *xyY - *(xyY+1))  *  *(xyY+2)  /  *(xyY+1);
+		*(xyz+2) = (1.0 - *xyY - *(xyY+1))  *  *(xyY+2)  /  *(xyY+1);
 	}
 	else {
-		*xyz = *(xyz+1) = *(xyz+2) = 0;
+		*xyz = *(xyz+1) = *(xyz+2) = 0.0;
 	}
 }
 
@@ -147,13 +147,13 @@ void xyz2lab (double *xyz, double *w, double *lab)
 
 	double fx, fy, fz;
 
-	fx = ((xr > epsilon)?  pow(xr, 1.0/3.0) : (kappa * xr + 16) / 116);
-	fy = ((yr > epsilon)?  pow(yr, 1.0/3.0) : (kappa * yr + 16) / 116);
-	fz = ((zr > epsilon)?  pow(zr, 1.0/3.0) : (kappa * zr + 16) / 116);
+	fx = ((xr > epsilon)?  pow(xr, 1.0/3.0) : (kappa * xr + 16.0) / 116.0);
+	fy = ((yr > epsilon)?  pow(yr, 1.0/3.0) : (kappa * yr + 16.0) / 116.0);
+	fz = ((zr > epsilon)?  pow(zr, 1.0/3.0) : (kappa * zr + 16.0) / 116.0);
 
-	*lab     = 116 * fy - 16;
-	*(lab+1) = 500 * (fx - fy);
-	*(lab+2) = 200 * (fy - fz);
+	*lab     = 116.0 * fy - 16.0;
+	*(lab+1) = 500.0 * (fx - fy);
+	*(lab+2) = 200.0 * (fy - fz);
 }
 
 
