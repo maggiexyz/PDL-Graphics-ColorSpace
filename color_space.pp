@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_lch');
+pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_lch', 'rgb_to_lch');
 
 pp_addpm({At=>'Top'}, <<'EOD');
 
@@ -69,6 +69,17 @@ sub xyz_to_lab {
 
 	return _xyz_to_lab( $xyz, $w );
 }
+
+
+sub rgb_to_lch {
+	my ($rgb, $space) = @_;
+
+	my $lab = xyz_to_lab( rgb_to_xyz( $rgb, $space ), $space );
+
+	return lab_to_lch( $lab );
+}
+
+
 
 EOD
 

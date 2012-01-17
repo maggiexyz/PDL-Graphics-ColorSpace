@@ -84,4 +84,13 @@ sub tapprox {
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'lab_to_lch' ) or diag($a, $ans);
 }
 
+# rgb_to_lch
+{
+	my $rgb = pdl([25, 10, 243], [0,0,1]);
+	my $a   = rgb_to_lch($rgb/255, 'sRGB');
+	my $ans = pdl([31.5634666908367, 126.828356633829, -53.7787253254218],
+		          [ 0.0197916632671635, 0.403227926549451, -69.8229798320609 ]);
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_lch sRGB' ) or diag($a, $ans);
+}
+
 done_testing();
