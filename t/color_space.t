@@ -71,7 +71,7 @@ sub tapprox {
 # xyz_to_lab
 {
 	my $xyz = pdl([0.4, 0.2, 0.02], [0,0,1]);
-	my $a   = xyz_to_lab($xyz, 'sRGB');
+	my $a   = $xyz->xyz_to_lab('sRGB');
 	my $ans = pdl([51.8372115265385, 82.2953523409701, 64.1921650722979], [0,0,-166.814773017556]);
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'xyz_to_lab sRGB' ) or diag($a, $ans);
 }
