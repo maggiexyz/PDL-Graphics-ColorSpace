@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyY_to_xyz', 'xyz_to_lab');
+pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_lch');
 
 pp_addpm({At=>'Top'}, <<'EOD');
 
@@ -237,7 +237,7 @@ pp_def('xyY_to_xyz',
 
 
 pp_def('_rgb_to_xyz',
-    Pars => 'double rgb(c=3); double gamma(); double l(i=3); double m(i=3); double n(i=3); double [o]xyz(d=3)',
+    Pars => 'double rgb(c=3); double gamma(); double l(i=3); double m(i=3); double n(i=3); double [o]xyz(c=3)',
     Code => '
         rgb2xyz($P(rgb), $gamma(), $P(l), $P(m), $P(n), $P(xyz));
     ',
@@ -246,7 +246,7 @@ pp_def('_rgb_to_xyz',
     BadCode => '
         /* First check for bad values */
         if ($ISBAD(rgb(c=>0)) || $ISBAD(rgb(c=>1)) || $ISBAD(rgb(c=>2))) {
-            loop (d) %{
+            loop (c) %{
                 $SETBAD(xyz());
             %}
             /* skip to the next xyz triple */
@@ -289,6 +289,28 @@ pp_def('_xyz_to_lab',
 			threadloop %{
 				xyz2lab( $P(xyz), &xyz_white, $P(lab) );
 			%}
+        }
+    ',
+);
+
+
+pp_def('lab_to_lch',
+    Pars => 'double lab(c=3); double [o]lch(c=3)',
+    Code => '
+		lab2lch( $P(lab), $P(lch) );
+    ',
+
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(lab(c=>0)) || $ISBAD(lab(c=>1)) || $ISBAD(lab(c=>2))) {
+            loop (c) %{
+                $SETBAD(lch());
+            %}
+            /* skip to the next lch triple */
+        }
+        else {
+			lab2lch( $P(lab), $P(lch) );
         }
     ',
 );

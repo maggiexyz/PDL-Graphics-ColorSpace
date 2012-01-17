@@ -16,9 +16,11 @@ double  rgb_quant( double p, double q, double h );
 void    rgb2hsl( double *, double * );
 void    rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz );
 double  _apow( double a, double p );
+double  _rad2deg( double rad );
 void    _mult_v3_m33( struct pixel *p, double *m0, double *m1, double *m2, double *result );
 void    xyY2xyz( double *xyY, double *xyz );
 void    xyz2lab( double *xyz, double *w, double *lab );
+void	lab2lch( double *lab, double *lch );
 
 
 /* ~~~~~~~~~~:> */
@@ -147,14 +149,25 @@ void xyz2lab (double *xyz, double *w, double *lab)
 
 	double fx, fy, fz;
 
-	fx = ((xr > epsilon)?  pow(xr, 1.0/3.0) : (kappa * xr + 16.0) / 116.0);
-	fy = ((yr > epsilon)?  pow(yr, 1.0/3.0) : (kappa * yr + 16.0) / 116.0);
-	fz = ((zr > epsilon)?  pow(zr, 1.0/3.0) : (kappa * zr + 16.0) / 116.0);
+	fx = (xr > epsilon)?  pow(xr, 1.0/3.0) : (kappa * xr + 16.0) / 116.0;
+	fy = (yr > epsilon)?  pow(yr, 1.0/3.0) : (kappa * yr + 16.0) / 116.0;
+	fz = (zr > epsilon)?  pow(zr, 1.0/3.0) : (kappa * zr + 16.0) / 116.0;
 
 	*lab     = 116.0 * fy - 16.0;
 	*(lab+1) = 500.0 * (fx - fy);
 	*(lab+2) = 200.0 * (fy - fz);
 }
 
+void lab2lch ( double *lab, double *lch )
+{
+	*lch = *lab;
+
+	*(lch+1) = sqrt( pow(*(lab+1), 2) + pow(*(lab+2), 2) );
+	*(lch+2) = _rad2deg( atan2( *(lab+2), *(lab+1) ) );
+}
 
 
+double _rad2deg( double rad )
+{
+	return 180.0 * rad / M_PI;
+}

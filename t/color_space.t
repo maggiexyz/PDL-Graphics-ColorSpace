@@ -76,4 +76,12 @@ sub tapprox {
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'xyz_to_lab sRGB' ) or diag($a, $ans);
 }
 
+# lab_to_lch
+{
+	my $lab = pdl([53.380244, 79.817473, 64.822569], [0,0,1]);
+	my $a   = lab_to_lch($lab);
+	my $ans = pdl([53.380244, 102.824094685368, 39.081262060261], [0,1,90]);
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'lab_to_lch' ) or diag($a, $ans);
+}
+
 done_testing();
