@@ -147,9 +147,9 @@ void xyz2lab (double *xyz, double *w, double *lab)
 
 	double fx, fy, fz;
 
-	fx = (xr > epsilon)?  pow(xr, 1/3) : (kappa * xr + 16) / 116;
-	fy = (yr > epsilon)?  pow(yr, 1/3) : (kappa * yr + 16) / 116;
-	fz = (zr > epsilon)?  pow(zr, 1/3) : (kappa * zr + 16) / 116;
+	fx = ((xr > epsilon)?  pow(xr, 1.0/3.0) : (kappa * xr + 16) / 116);
+	fy = ((yr > epsilon)?  pow(yr, 1.0/3.0) : (kappa * yr + 16) / 116);
+	fz = ((zr > epsilon)?  pow(zr, 1.0/3.0) : (kappa * zr + 16) / 116);
 
 	*lab     = 116 * fy - 16;
 	*(lab+1) = 500 * (fx - fy);
