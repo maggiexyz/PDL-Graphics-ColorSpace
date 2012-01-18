@@ -11,7 +11,73 @@ PDL::Graphics::ColorSpace
 
 =head1 DESCRIPTION
 
-Derived from Graphics::ColorObject (Izvorski & Reibenschuh, 2005). Converts between color spaces. Some conversions require specifying the RGB space. Supported RGB space include (aliases in square brackets):
+Derived from Graphics::ColorObject (Izvorski & Reibenschuh, 2005). Converts between color spaces.
+
+Often the conversion will return out-of-gamut values. This allows chained conversions to be lossless and reverse conversions to produce the original values. You can clip the values to be within-gamut if necessary. Please check the specific color space for the gamut range.
+
+=head1 COLOR SPACES
+
+=head2 RGB
+
+Red, green, and blue. Normalized to be in the range of [0,1]. If you have / need integer value between [0,255], divide or multiply the values by 255.
+
+=head2 HSL
+
+Hue, Saturation and Luminance (or brightness).
+
+The HSL color space defines colors more naturally: Hue specifies the base color, the other two values then let you specify the saturation of that color and how bright the color should be.
+
+Hue is specified here as degrees ranging from 0° to 360°. There are 6 base colors:
+
+Hue	Hue (degree)	Color
+0	0°	red
+1	60°	yellow
+2	120°	green
+3	180°	cyan
+4	240°	blue
+5	300°	magenta
+6	360°	red
+
+Saturation specifies the distance from the middle of the color wheel. So a saturation value of 0 (0%) means "center of the wheel", i.e. a grey value, whereas a saturation value of 1 (100%) means "at the border of the wheel", where the color is fully saturated.
+
+Luminance describes how "bright" the color is. 0 (0%) means 0 brightness and the color is black. 1 (100%) means maximum brightness and the color is white.
+
+For more info see L<http://www.chaospro.de/documentation/html/paletteeditor/colorspace_hsl.htm>.
+
+=head2 XYZ and xyY
+
+=head2 Lab
+
+=head2 LCH
+
+This is possibly a little easier to comprehend than the Lab colour space, with which it shares several features. It is more correctly known as  L*C*H*.  Essentially it is in the form of a sphere. There are three axes; L* and C* and H°. 
+
+The L* axis represents Lightness. This is vertical; from 0, which has no lightness (i.e. absolute black), at the bottom; through 50 in the middle, to 100 which is maximum lightness (i.e. absolute white) at the top.
+
+The C* axis represents Chroma or "saturation". This ranges from 0 at the centre of the circle, which is completely unsaturated (i.e. a neutral grey, black or white) to 100 or more at the edge of the circle for very high Chroma (saturation) or "colour purity".
+
+If we take a horizontal slice through the centre, we see a coloured circle. Around the edge of the circle we see every possible saturated colour, or Hue. This circular axis is known as H° for Hue. The units are in the form of degrees° (or angles), ranging from 0° (red) through 90° (yellow), 180° (green), 270° (blue) and back to  0°. 
+
+For more info see L<http://www.colourphil.co.uk/lab_lch_colour_space.html>.
+
+=head1 SYNOPSIS
+
+	use PDL::LiteF;
+	use PDL::IO::Pic;
+	use PDL::Graphics::ColorSpace;
+
+	my $image_rgb = PDL->rpic('photo.jpg') if PDL->rpiccan('JPEG');
+	# convert RGB value from [0,255] to [0,1]
+	$image_rgb /= 255;
+	my $image_xyz = $image_rgb->rgb_to_xyz( 'sRGB' );
+
+Or
+
+	my $image_xyz = rgb_to_xyz( $image_rgb, 'sRGB' );
+
+=head1 OPTIONS
+
+Some conversions require specifying the RGB space. Supported RGB space include (aliases in square brackets):
 
 	Adobe RGB (1998) [Adobe]
 	Apple RGB [Apple]
@@ -29,20 +95,6 @@ Derived from Graphics::ColorObject (Izvorski & Reibenschuh, 2005). Converts betw
 	SMPTE-C [SMPTE]
 	WideGamut
 	sRGB [709] [CIE Rec 709]
-
-
-=head1 SYNOPSIS
-
-	use PDL::LiteF;
-	use PDL::IO::Pic;
-	use PDL::Graphics::ColorSpace;
-
-	my $image_rgb = PDL->rpic('photo.jpg') if PDL->rpiccan('JPEG');
-	my $image_xyz = $image_rgb->rgb_to_xyz( 'sRGB' );
-
-Or
-
-	my $image_xyz = rgb_to_xyz( $image_rgb, 'sRGB' );
 
 
 =cut
