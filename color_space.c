@@ -164,6 +164,9 @@ void lab2lch ( double *lab, double *lch )
 
 	*(lch+1) = sqrt( pow(*(lab+1), 2) + pow(*(lab+2), 2) );
 	*(lch+2) = _rad2deg( atan2( *(lab+2), *(lab+1) ) );
+
+	while (*(lch+2) < 0.0)   { *(lch+2) += 360; }
+	while (*(lch+2) > 360.0) { *(lch+2) -= 360; }
 }
 
 
