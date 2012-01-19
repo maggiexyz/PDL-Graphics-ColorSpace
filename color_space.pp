@@ -136,13 +136,13 @@ my $hsl_to_rgb_code = q{
 		p = 2*l - q;
 	}
 	
-	$rgb(m=>0) = round( rgb_quant(p, q, h+120) * 255 );
-	$rgb(m=>1) = round( rgb_quant(p, q, h) * 255 );
-	$rgb(m=>2) = round( rgb_quant(p, q, h-120) * 255 );
+	$rgb(m=>0) = rgb_quant(p, q, h+120);
+	$rgb(m=>1) = rgb_quant(p, q, h);
+	$rgb(m=>2) = rgb_quant(p, q, h-120);
 };
 
 pp_def('hsl_to_rgb',
-    Pars => 'float+ hsl(n=3); int [o]rgb(m=3)',
+    Pars => 'double hsl(n=3); double [o]rgb(m=3)',
     Code => q[
         $GENERIC(hsl) h, s, l, p, q;
         

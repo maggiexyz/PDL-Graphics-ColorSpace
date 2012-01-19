@@ -30,17 +30,9 @@ sub tapprox {
 {
 	my( $a, $ans );
 
-	$a = hsl_to_rgb( pdl(0,0,1) );
-	$ans = pdl(255, 255, 255);
-	is( tapprox( sum(abs($a - $ans)), 0 ), 1 ) or diag($a, $ans);
-	
-	$a = hsl_to_rgb( pdl(0,0,0) );
-	$ans = pdl(0, 0, 0);
-	is( tapprox( sum(abs($a - $ans)), 0 ), 1 ) or diag($a, $ans);
-	
-	$a = hsl_to_rgb( pdl(350.204081632653, 1, 0.519607843137255) );
-	$ans = pdl(255,10,50);
-	is( tapprox( sum(abs($a - $ans)), 0 ), 1 ) or diag($a, $ans);
+	$a = hsl_to_rgb( pdl([0,0,1], [0,0,0], [350.204081632653, 1, 0.519607843137255]) );
+	$ans = pdl([255, 255, 255], [0,0,0], [255,10,50]) / 255;
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'hsl_to_rgb' ) or diag($a, $ans);
 }
 
 # rgb_to_xyz
