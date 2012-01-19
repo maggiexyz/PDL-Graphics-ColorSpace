@@ -4,6 +4,7 @@ use warnings;
 use Test::More;
 
 use PDL::LiteF;
+use PDL::NiceSlice;
 use PDL::Graphics::ColorSpace;
 
 sub tapprox {
@@ -74,6 +75,13 @@ sub tapprox {
 	my $a   = $xyz->xyz_to_lab('sRGB');
 	my $ans = pdl([51.8372115265385, 82.2953523409701, 64.1921650722979], [0,0,-166.814773017556]);
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'xyz_to_lab sRGB' ) or diag($a, $ans);
+
+	$xyz->setbadat(0,1);
+	$a   = $xyz->xyz_to_lab('sRGB');
+	$ans->setbadat($_,1) for (0..2);
+
+	is( $a->badflag, 1, 'xyz_to_lab bad flag' );
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'xyz_to_lab sRGB with bad value' ) or diag($a, $ans);
 }
 
 # lab_to_lch
@@ -86,11 +94,17 @@ sub tapprox {
 
 # rgb_to_lch
 {
-	my $rgb = pdl([25, 10, 243], [0,0,1]);
-	my $a   = rgb_to_lch($rgb/255, 'sRGB');
-	my $ans = pdl([31.5634666908367, 126.828356633829, -53.7787253254218],
-		          [ 0.0197916632671635, 0.403227926549451, -69.8229798320609 ]);
+	my $rgb = pdl([25, 10, 243], [0,0,1]) / 255;
+	my $a   = rgb_to_lch($rgb, 'sRGB');
+	my $ans = pdl([31.5634666908367, 126.828356633829, 306.221274674578],
+		          [ 0.0197916632671635, 0.403227926549451, 290.177020167939 ]);
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_lch sRGB' ) or diag($a, $ans);
+
+	$rgb->setbadat(1,1);
+	$a = $rgb->rgb_to_lch('sRGB');
+	$ans->setbadat($_,1) for (0..2);
+
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_lch sRGB with bad value' ) or diag($a, $ans);
 }
 
 done_testing();

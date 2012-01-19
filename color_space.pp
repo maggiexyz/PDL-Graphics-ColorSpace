@@ -66,8 +66,10 @@ For more info see L<http://www.colourphil.co.uk/lab_lch_colour_space.html>.
 	use PDL::Graphics::ColorSpace;
 
 	my $image_rgb = PDL->rpic('photo.jpg') if PDL->rpiccan('JPEG');
+
 	# convert RGB value from [0,255] to [0,1]
-	$image_rgb /= 255;
+	$image_rgb = $image_rgb->double / 255;
+
 	my $image_xyz = $image_rgb->rgb_to_xyz( 'sRGB' );
 
 Or
@@ -300,23 +302,23 @@ pp_def('_xyz_to_lab',
 
     HandleBad => 1,
     BadCode => '
-        /* First check for bad values */
-        if ($ISBAD(xyz(c=>0)) || $ISBAD(xyz(c=>1)) || $ISBAD(xyz(c=>2))) {
-            loop (c) %{
-                $SETBAD(lab());
-            %}
-            /* skip to the next xyz triple */
-        }
-        else {
-			/* construct white point */
-			double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
-			double xyz_white[3];
-			xyY2xyz( &xyY, &xyz_white );
+		/* construct white point */
+		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+		double xyz_white[3];
+		xyY2xyz( &xyY, &xyz_white );
 
-			threadloop %{
+		threadloop %{
+			/* First check for bad values */
+			if ($ISBAD(xyz(c=>0)) || $ISBAD(xyz(c=>1)) || $ISBAD(xyz(c=>2))) {
+				loop (c) %{
+					$SETBAD(lab());
+				%}
+				/* skip to the next xyz triple */
+			}
+			else {
 				xyz2lab( $P(xyz), &xyz_white, $P(lab) );
-			%}
-        }
+			}
+		%}
     ',
 );
 
