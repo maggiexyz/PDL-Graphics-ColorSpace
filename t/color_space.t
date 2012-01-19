@@ -78,9 +78,6 @@ sub tapprox {
 
 	$xyz->setbadat(0,1);
 	$a   = $xyz->xyz_to_lab('sRGB');
-	$ans->setbadat($_,1) for (0..2);
-
-	is( $a->badflag, 1, 'xyz_to_lab bad flag' );
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'xyz_to_lab sRGB with bad value' ) or diag($a, $ans);
 }
 
@@ -102,8 +99,6 @@ sub tapprox {
 
 	$rgb->setbadat(1,1);
 	$a = $rgb->rgb_to_lch('sRGB');
-	$ans->setbadat($_,1) for (0..2);
-
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_lch sRGB with bad value' ) or diag($a, $ans);
 }
 
