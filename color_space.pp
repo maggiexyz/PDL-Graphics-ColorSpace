@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_lch', 'rgb_to_lch');
+pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_lch', 'rgb_to_lch', 'lch_to_lab');
 
 pp_addpm({At=>'Top'}, <<'EOD');
 
@@ -362,6 +362,50 @@ DOCUMENTATION
 =for bad
 
 If C<lab_to_lch> encounters a bad value in any of the L, a, or b values the output piddle will be marked as bad and the associated L, C, and H values will all be marked as bad.
+
+=cut
+
+BADDOC
+);
+
+
+pp_def('lch_to_lab',
+    Pars => 'double lch(c=3); double [o]lab(c=3)',
+    Code => '
+		lch2lab( $P(lch), $P(lab) );
+    ',
+
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(lch(c=>0)) || $ISBAD(lch(c=>1)) || $ISBAD(lch(c=>2))) {
+            loop (c) %{
+                $SETBAD(lab());
+            %}
+            /* skip to the next lab triple */
+        }
+        else {
+			lch2lab( $P(lch), $P(lab) );
+        }
+    ',
+    Doc => <<DOCUMENTATION,
+
+=pod
+
+=for ref
+
+Converts an LCH color triple to an Lab color triple.
+
+The first dimension of the piddles holding the lch and lab values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=cut
+
+DOCUMENTATION
+    BadDoc => <<BADDOC,
+
+=for bad
+
+If C<lch_to_lab> encounters a bad value in any of the L, C, or H values the output piddle will be marked as bad and the associated L, a, and b values will all be marked as bad.
 
 =cut
 

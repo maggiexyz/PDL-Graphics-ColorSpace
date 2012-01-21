@@ -17,10 +17,12 @@ void    rgb2hsl( double *, double * );
 void    rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz );
 double  _apow( double a, double p );
 double  _rad2deg( double rad );
+double  _deg2rad( double deg );
 void    _mult_v3_m33( struct pixel *p, double *m0, double *m1, double *m2, double *result );
 void    xyY2xyz( double *xyY, double *xyz );
 void    xyz2lab( double *xyz, double *w, double *lab );
 void	lab2lch( double *lab, double *lch );
+void    lch2lab( double *lch, double *lab );
 
 
 /* ~~~~~~~~~~:> */
@@ -124,7 +126,7 @@ void _mult_v3_m33( struct pixel *p, double *m0, double *m1, double *m2, double *
 }
 
 
-void xyY2xyz (double *xyY, double *xyz)
+void xyY2xyz( double *xyY, double *xyz )
 {
 
 	*(xyz+1) = *(xyY+2);
@@ -139,7 +141,7 @@ void xyY2xyz (double *xyY, double *xyz)
 }
 
 
-void xyz2lab (double *xyz, double *w, double *lab)
+void xyz2lab( double *xyz, double *w, double *lab )
 {
 	double xr, yr, zr;
 
@@ -158,7 +160,7 @@ void xyz2lab (double *xyz, double *w, double *lab)
 	*(lab+2) = 200.0 * (fy - fz);
 }
 
-void lab2lch ( double *lab, double *lch )
+void lab2lch( double *lab, double *lch )
 {
 	*lch = *lab;
 
@@ -169,8 +171,39 @@ void lab2lch ( double *lab, double *lch )
 	while (*(lch+2) > 360.0) { *(lch+2) -= 360; }
 }
 
+void lch2lab( double *lch, double *lab )
+{
+    /* l is set */
+    *lab = *lch;
+
+    double c = *(lch+1);
+    double h = _deg2rad( *(lch+2) );
+    double th = tan(h);
+
+    double *a;
+    double *b;
+
+    a = lab+1;
+    b = lab+2;
+
+    *a = c / sqrt( pow(th,2) + 1 );
+    *b = sqrt( pow(c, 2) - pow(*a, 2) );
+
+    if (h < 0.0)
+        h += 2*M_PI;
+    if (h > M_PI/2 && h < M_PI*3/2)
+        *a = -*a;
+    if (h > M_PI)
+        *b = -*b;
+}
+
 
 double _rad2deg( double rad )
 {
 	return 180.0 * rad / M_PI;
+}
+
+double _deg2rad( double deg )
+{
+    return deg * (M_PI / 180.0); 
 }

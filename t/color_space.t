@@ -94,4 +94,13 @@ sub tapprox {
 	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_lch sRGB with bad value' ) or diag($a, $ans);
 }
 
+# lch_to_lab
+{
+	my $lch = pdl([53.380244, 102.824094685368, 39.081262060261], [0,1,90]);
+	my $a   = lch_to_lab($lch);
+	my $ans = pdl([53.380244, 79.817473, 64.822569], [0,0,1]);
+	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'lch_to_lab' ) or diag($a, $ans);
+}
+
+
 done_testing();
