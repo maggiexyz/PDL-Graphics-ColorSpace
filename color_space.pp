@@ -8,6 +8,9 @@ pp_addpm({At=>'Top'}, <<'EOD');
 
 PDL::Graphics::ColorSpace
 
+=head1 VERSION
+
+0.0.3
 
 =head1 DESCRIPTION
 
