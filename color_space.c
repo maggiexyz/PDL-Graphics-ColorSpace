@@ -23,9 +23,11 @@ void    xyY2xyz( double *xyY, double *xyz );
 void    xyz2lab( double *xyz, double *w, double *lab );
 void	lab2lch( double *lab, double *lch );
 void    lch2lab( double *lch, double *lab );
+void    lab2xyz( double *lab, double *w, double *xyz );
 
 
 /* ~~~~~~~~~~:> */
+
 double rgb_quant( double p, double q, double h )
 {
 	while (h < 0)     { h += 360; }
@@ -195,6 +197,27 @@ void lch2lab( double *lch, double *lab )
         *a = -*a;
     if (h > M_PI)
         *b = -*b;
+}
+
+
+void lab2xyz( double *lab, double *w, double *xyz )
+{
+	double xr, yr, zr;
+
+	yr = (*lab > kappa * epsilon) ?  pow( (*lab + 16.0)/116.0, 3 )  :  *lab / kappa;
+
+	double fx, fy, fz;
+
+	fy = (yr > epsilon) ?  (*lab + 16.0)/116.0  :  (kappa * yr + 16.0)/116.0;
+	fx = *(lab+1) / 500.0 + fy;
+	fz = fy - *(lab+2) / 200.0;
+
+	xr = (pow(fx, 3) > epsilon) ?  pow(fx, 3)  :  (fx * 116.0 - 16.0) / kappa;
+	zr = (pow(fz, 3) > epsilon) ?  pow(fz, 3)  :  (fz * 116.0 - 16.0) / kappa;
+
+	*xyz     = xr * *w;
+	*(xyz+1) = yr * *(w+1);
+	*(xyz+2) = zr * *(w+2);
 }
 
 

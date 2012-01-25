@@ -6,3 +6,4 @@ void    xyY2xyz( double *xyY, double *xyz );
 void    xyz2lab( double *xyz, double *w, double *lab );
 void    lab2lch( double *lab, double *lch );
 void    lch2lab( double *lch, double *lab );
+void    lab2xyz( double *lab, double *w, double *xyz );

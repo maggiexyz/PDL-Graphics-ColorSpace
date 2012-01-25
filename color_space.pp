@@ -323,6 +323,43 @@ pp_def('_xyz_to_lab',
 );
 
 
+pp_def('_lab_to_xyz',
+    Pars => 'double lab(c=3); double w(d=2);  double [o]xyz(c=3)',
+    Code => '
+		/* construct white point */
+		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+		double xyz_white[3];
+		xyY2xyz( &xyY, &xyz_white );
+
+		threadloop %{
+	        lab2xyz( $P(lab), &xyz_white, $P(xyz) );
+		%}
+    ',
+	Doc => undef,
+
+    HandleBad => 1,
+    BadCode => '
+		/* construct white point */
+		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+		double xyz_white[3];
+		xyY2xyz( &xyY, &xyz_white );
+
+		threadloop %{
+			/* First check for bad values */
+			if ($ISBAD(lab(c=>0)) || $ISBAD(lab(c=>1)) || $ISBAD(lab(c=>2))) {
+				loop (c) %{
+					$SETBAD(xyz());
+				%}
+				/* skip to the next lab triple */
+			}
+			else {
+				lab2xyz( $P(lab), &xyz_white, $P(xyz) );
+			}
+		%}
+    ',
+);
+
+
 pp_def('lab_to_lch',
     Pars => 'double lab(c=3); double [o]lch(c=3)',
     Code => '
@@ -482,6 +519,41 @@ sub PDL::xyz_to_lab {
 	my $w = pdl $WHITE_POINT->{ $RGB_SPACE->{$space}{white_point} };
 
 	return _xyz_to_lab( $xyz, $w );
+}
+
+
+=head2 lab_to_xyz
+
+=for ref
+
+Converts an Lab color triple to an XYZ color triple.
+
+A Lab color space is a color-opponent space with dimension L for lightness and a and b for the color-opponent dimensions, based on nonlinearly compressed CIE XYZ color space coordinates.
+
+The first dimension of the piddles holding the lab values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for bad
+
+If C<lab_to_xyz> encounters a bad value in any of the L, a, or b values the output piddle will be marked as bad and the associated X, Y, and Z values will all be marked as bad.
+
+=for usage
+
+Usage:
+
+	my $xyz = lab_to_xyz( $lab, 'sRGB' );
+
+=cut
+
+*lab_to_xyz = \&PDL::lab_to_xyz;
+sub PDL::lab_to_xyz {
+	my ($lab, $space) = @_;
+
+	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+		if !$space;
+
+	my $w = pdl $WHITE_POINT->{ $RGB_SPACE->{$space}{white_point} };
+
+	return _lab_to_xyz( $lab, $w );
 }
 
 
