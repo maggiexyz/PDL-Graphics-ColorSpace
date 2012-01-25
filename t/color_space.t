@@ -98,14 +98,24 @@ sub tapprox {
 # rgb_to_lch
 {
 	my $rgb = pdl([25, 10, 243], [0,0,1]) / 255;
-	my $a   = rgb_to_lch($rgb, 'sRGB');
-	my $ans = pdl([31.5634666908367, 126.828356633829, 306.221274674578],
+	my $lch = pdl([31.5634666908367, 126.828356633829, 306.221274674578],
 		          [ 0.0197916632671635, 0.403227926549451, 290.177020167939 ]);
-	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_lch sRGB' ) or diag($a, $ans);
 
-	$rgb->setbadat(1,1);
-	$a = $rgb->rgb_to_lch('sRGB');
-	is( tapprox( sum(abs($a - $ans)), 0 ), 1, 'rgb_to_lch sRGB with bad value' ) or diag($a, $ans);
+	my $a_lch = rgb_to_lch($rgb, 'sRGB');
+	is( tapprox( sum(abs($a_lch - $lch)), 0 ), 1, 'rgb_to_lch sRGB' ) or diag($a_lch, $lch);
+
+	my $a_rgb = lch_to_rgb($lch, 'sRGB');
+	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'lch_to_rgb sRGB' ) or diag($a_rgb, $rgb);
+
+	my $rgb_bad = $rgb->copy;
+	$rgb_bad->setbadat(1,1);
+	$a_lch = $rgb_bad->rgb_to_lch('sRGB');
+	is( tapprox( sum(abs($a_lch - $lch)), 0 ), 1, 'rgb_to_lch sRGB with bad value' ) or diag($a_lch, $lch);
+
+	my $lch_bad = $lch->copy;
+	$lch_bad->setbadat(1,1);
+	$a_rgb = $lch_bad->lch_to_rgb('sRGB');
+	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'lch_to_rgb sRGB with bad value' ) or diag($a_rgb, $rgb);
 }
 
 

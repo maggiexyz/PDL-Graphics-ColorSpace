@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_lab');
+pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_rgb', 'lch_to_lab');
 
 pp_addpm({At=>'Top'}, <<'EOD');
 
@@ -19,7 +19,11 @@ Often the conversion will return out-of-gamut values. Retaining out-of-gamut val
 
 =head2 RGB
 
-Red, green, and blue. Normalized to be in the range of [0,1]. If you have / need integer value between [0,255], divide or multiply the values by 255.
+An RGB color space is any additive color space based on the RGB color model. A particular RGB color space is defined by the three chromaticities of the red, green, and blue additive primaries, and can produce any chromaticity that is the triangle defined by those primary colors. The complete specification of an RGB color space also requires a white point chromaticity and a gamma correction curve.
+
+For more info on the RGB color space, see L<http://en.wikipedia.org/wiki/RGB_color_space>.
+
+This module expects and produces RGB values normalized to be in the range of [0,1]. If you have / need integer value between [0,255], divide or multiply the values by 255.
 
 =head2 HSL
 
@@ -41,11 +45,19 @@ Saturation specifies the distance from the middle of the color wheel. So a satur
 
 Luminance describes how "bright" the color is. 0 (0%) means 0 brightness and the color is black. 1 (100%) means maximum brightness and the color is white.
 
-For more info see L<http://www.chaospro.de/documentation/html/paletteeditor/colorspace_hsl.htm>.
+For more info, see L<http://www.chaospro.de/documentation/html/paletteeditor/colorspace_hsl.htm>.
 
 =head2 XYZ and xyY
 
+The CIE XYZ color space was derived the CIE RGB color space. XYZ are three hypothetical primaries. Y means brightness, Z is quasi-equal to blue stimulation, and X is a mix which looks like red sensitivy curve of cones.  All visible colors can be represented by using only positive values of X, Y, and Z. The main advantage of the CIE XYZ space (and any color space based on it) is that this space is completely device-independent.
+
+For more info, see L<http://en.wikipedia.org/wiki/CIE_1931_color_space>.
+
 =head2 Lab
+
+A Lab color space is a color-opponent space with dimension L for lightness and a and b for the color-opponent dimensions, based on nonlinearly compressed CIE XYZ color space coordinates. It's derived from the "master" space CIE 1931 XYZ color space but is more perceptually uniform than XYZ. The Lab space is relative to the white point of the XYZ data they were converted from. Lab values do not define absolute colors unless the white point is also specified.
+
+For more info, see L<http://en.wikipedia.org/wiki/Lab_color_space>.
 
 =head2 LCH
 
@@ -57,7 +69,7 @@ The C* axis represents Chroma or "saturation". This ranges from 0 at the centre 
 
 If we take a horizontal slice through the centre, we see a coloured circle. Around the edge of the circle we see every possible saturated colour, or Hue. This circular axis is known as H° for Hue. The units are in the form of degrees° (or angles), ranging from 0 (red) through 90 (yellow), 180 (green), 270 (blue) and back to 0. 
 
-For more info see L<http://www.colourphil.co.uk/lab_lch_colour_space.html>.
+For more info, see L<http://www.colourphil.co.uk/lab_lch_colour_space.html>.
 
 =head1 SYNOPSIS
 
@@ -78,7 +90,7 @@ Or
 
 =head1 OPTIONS
 
-Some conversions require specifying the RGB space. Supported RGB space include (aliases in square brackets):
+Some conversions require specifying the RGB space which includes gamma curve and white point definitions. Supported RGB space include (aliases in square brackets):
 
 	Adobe RGB (1998) [Adobe]
 	Apple RGB [Apple]
@@ -168,7 +180,7 @@ pp_def('hsl_to_rgb',
         %}
     ],
 
-    Doc => <<DOCUMENTATION,
+    Doc => <<'DOCUMENTATION',
 
 =pod
 
@@ -176,9 +188,13 @@ pp_def('hsl_to_rgb',
 
 Converts an HSL color triple to an RGB color triple
 
-HSL stands for hue-saturation-Lightness and is nicely represented by a cirle in a color palette. In this representation, the numbers representing saturation and value must be between 0 and 1; anything less than zero or greater than 1 will be truncated to the closest limit. The hue must be a value between 0 and 360, and again it will be truncated to the corresponding limit if that is not the case. For more information about HSL, see L<http://en.wikipedia.org/wiki/HSL_and_HSL>.
-
 The first dimension of the piddles holding the hsl and rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for usage
+
+Usage:
+
+	my $rgb = hsl_to_rgb( $hsl );
 
 =cut
 
@@ -215,7 +231,7 @@ pp_def('rgb_to_hsl',
         }
     ',
 
-    Doc => <<DOCUMENTATION,
+    Doc => <<'DOCUMENTATION',
 
 =pod
 
@@ -223,9 +239,13 @@ pp_def('rgb_to_hsl',
 
 Converts an RGB color triple to an HSL color triple.
 
-HSL stands for hue-saturation-lightness and is nicely represented by a cirle in a color palette. In this representation, the numbers representing saturation and lightness will run between 0 and 1. The hue will be a value between 0 and 360. For more information about HSL, see L<http://en.wikipedia.org/wiki/HSL_and_HSL>.
-
 The first dimension of the piddles holding the hsl and rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for usage
+
+Usage:
+
+	my $hsl = rgb_to_hsl( $rgb );
 
 =cut
 
@@ -246,6 +266,8 @@ pp_def('xyY_to_xyz',
     Code => '
 		xyY2xyz($P(xyY), $P(xyz));
     ',
+
+	Doc => 'Internal function for white point calculation. Use it if you must.',
 
     HandleBad => 1,
     BadCode => '
@@ -283,6 +305,7 @@ pp_def('_rgb_to_xyz',
         }
     ',
 	Doc => undef,
+	BadDoc => undef,
 );
 
 
@@ -306,6 +329,7 @@ pp_def('_xyz_to_rgb',
         }
     ',
 	Doc => undef,
+	BadDoc => undef,
 );
 
 
@@ -343,6 +367,7 @@ pp_def('_xyz_to_lab',
 			}
 		%}
     ',
+	BadDoc => undef,
 );
 
 
@@ -380,6 +405,7 @@ pp_def('_lab_to_xyz',
 			}
 		%}
     ',
+	BadDoc => undef,
 );
 
 
@@ -402,7 +428,7 @@ pp_def('lab_to_lch',
 			lab2lch( $P(lab), $P(lch) );
         }
     ',
-    Doc => <<DOCUMENTATION,
+    Doc => <<'DOCUMENTATION',
 
 =pod
 
@@ -410,9 +436,13 @@ pp_def('lab_to_lch',
 
 Converts an Lab color triple to an LCH color triple.
 
-LCH stands for lightness-chroma-hue and is nicely represented by a sphere in a color palette. In this representation, the numbers representing lightness and chroma should be between 0 and 100. The hue will be a value between 0 and 360. For more information about LCH, see L<http://www.colourphil.co.uk/lab_lch_colour_space.html>.
+The first dimension of the piddles holding the lab values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
 
-The first dimension of the piddles holding the hsl and rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+=for usage
+
+Usage:
+
+	my $lch = lab_to_lch( $lab );
 
 =cut
 
@@ -448,7 +478,7 @@ pp_def('lch_to_lab',
 			lch2lab( $P(lch), $P(lab) );
         }
     ',
-    Doc => <<DOCUMENTATION,
+    Doc => <<'DOCUMENTATION',
 
 =pod
 
@@ -456,7 +486,13 @@ pp_def('lch_to_lab',
 
 Converts an LCH color triple to an Lab color triple.
 
-The first dimension of the piddles holding the lch and lab values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+The first dimension of the piddles holding the lch values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for usage
+
+Usage:
+
+	my $lab = lch_to_lab( $lch );
 
 =cut
 
@@ -483,7 +519,7 @@ pp_addpm(<<'EOD');
 
 Converts an RGB color triple to an XYZ color triple.
 
-The first dimension of the piddles holding the rgb and xyz values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+The first dimension of the piddles holding the rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
 
 =for bad
 
@@ -549,8 +585,6 @@ sub PDL::xyz_to_rgb {
 
 Converts an XYZ color triple to an Lab color triple.
 
-A Lab color space is a color-opponent space with dimension L for lightness and a and b for the color-opponent dimensions, based on nonlinearly compressed CIE XYZ color space coordinates.
-
 The first dimension of the piddles holding the xyz values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
 
 =for bad
@@ -583,8 +617,6 @@ sub PDL::xyz_to_lab {
 =for ref
 
 Converts an Lab color triple to an XYZ color triple.
-
-A Lab color space is a color-opponent space with dimension L for lightness and a and b for the color-opponent dimensions, based on nonlinearly compressed CIE XYZ color space coordinates.
 
 The first dimension of the piddles holding the lab values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
 
@@ -643,6 +675,39 @@ sub PDL::rgb_to_lch {
 	my $lab = xyz_to_lab( rgb_to_xyz( $rgb, $space ), $space );
 
 	return lab_to_lch( $lab );
+}
+
+
+=head2 lch_to_rgb
+
+=for ref
+
+Converts an LCH color triple to an RGB color triple.
+
+The first dimension of the piddles holding the lch values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for bad
+
+If C<lch_to_rgb> encounters a bad value in any of the L, C, or H values the output piddle will be marked as bad and the associated R, G, and B values will all be marked as bad.
+
+=for usage
+
+Usage:
+
+	my $rgb = lch_to_rgb( $lch, 'sRGB' );
+
+=cut
+
+*lch_to_rgb = \&PDL::lch_to_rgb;
+sub PDL::lch_to_rgb {
+	my ($lch, $space) = @_;
+
+	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+		if !$space;
+
+	my $xyz = lab_to_xyz( lch_to_lab( $lch ), $space );
+
+	return xyz_to_rgb( $xyz, $space );
 }
 
 
