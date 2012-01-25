@@ -41,6 +41,9 @@ sub tapprox {
 	my $a_xyz = rgb_to_xyz( $rgb, 'sRGB' );
 	is( tapprox( sum(abs($a_xyz - $xyz)), 0 ), 1, 'rgb_to_xyz sRGB' ) or diag($a_xyz, $xyz);
 
+	my $a_rgb = xyz_to_rgb( $xyz, 'sRGB' );
+	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'xyz_to_rgb sRGB' ) or diag($a_rgb, $rgb);
+
 	my $rgb_ = pdl(255, 10, 50) / 255;
 	my $a = rgb_to_xyz( $rgb_, 'Adobe' );
 	my $ans = pdl( 0.582073320819542, 0.299955362786115, 0.0546021884576833 ); 

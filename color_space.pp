@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_lch', 'rgb_to_lch', 'lch_to_lab');
+pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_lab');
 
 pp_addpm({At=>'Top'}, <<'EOD');
 
@@ -286,6 +286,29 @@ pp_def('_rgb_to_xyz',
 );
 
 
+pp_def('_xyz_to_rgb',
+    Pars => 'double xyz(c=3); double gamma(); double l(i=3); double m(i=3); double n(i=3); double [o]rgb(c=3)',
+    Code => '
+        xyz2rgb($P(xyz), $gamma(), $P(l), $P(m), $P(n), $P(rgb));
+    ',
+
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(xyz(c=>0)) || $ISBAD(xyz(c=>1)) || $ISBAD(xyz(c=>2))) {
+            loop (c) %{
+                $SETBAD(rgb());
+            %}
+            /* skip to the next rgb triple */
+        }
+        else {
+        	xyz2rgb($P(xyz), $gamma(), $P(l), $P(m), $P(n), $P(rgb));
+        }
+    ',
+	Doc => undef,
+);
+
+
 pp_def('_xyz_to_lab',
     Pars => 'double xyz(c=3); double w(d=2);  double [o]lab(c=3)',
     Code => '
@@ -484,6 +507,39 @@ sub PDL::rgb_to_xyz {
     my @m = pdl( $RGB_SPACE->{$space}{m} )->dog;
 
     return _rgb_to_xyz( $rgb, $RGB_SPACE->{$space}{gamma}, @m );
+}
+
+
+=head2 xyz_to_rgb
+
+=for ref
+
+Converts an XYZ color triple to an RGB color triple.
+
+The first dimension of the piddles holding the xyz and rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for bad
+
+If C<xyz_to_rgb> encounters a bad value in any of the X, Y, or Z values the output piddle will be marked as bad and the associated R, G, and B values will all be marked as bad.
+
+=for usage
+
+Usage:
+
+	my $rgb = xyz_to_rgb( $xyz, 'sRGB' );
+
+=cut
+
+*xyz_to_rgb = \&PDL::xyz_to_rgb;
+sub PDL::xyz_to_rgb {
+    my ($xyz, $space) = @_;
+
+	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+		if !$space;
+
+    my @mstar = pdl( $RGB_SPACE->{$space}{mstar} )->dog;
+
+    return _xyz_to_rgb( $xyz, $RGB_SPACE->{$space}{gamma}, @mstar );
 }
 
 

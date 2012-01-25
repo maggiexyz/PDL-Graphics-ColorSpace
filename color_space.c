@@ -15,6 +15,7 @@ struct pixel {
 double  rgb_quant( double p, double q, double h );
 void    rgb2hsl( double *, double * );
 void    rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz );
+void    xyz2rgb( double *xyz, double gamma, double *m0, double *m1, double *m2, double *rgb );
 double  _apow( double a, double p );
 double  _rad2deg( double rad );
 double  _deg2rad( double deg );
@@ -113,6 +114,30 @@ void rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, dou
 	}
 
 	_mult_v3_m33( &p, m0, m1, m2, xyz );
+}
+
+
+void xyz2rgb( double *xyz, double gamma, double *m0, double *m1, double *m2, double *rgb )
+{
+	struct pixel  p = { *xyz, *(xyz+1), *(xyz+2) };
+
+	_mult_v3_m33( &p, m0, m1, m2, rgb );
+
+	double *r;  r = rgb;
+	double *g;  g = rgb+1;
+	double *b;  b = rgb+2;
+
+	if (gamma < 0) {
+		/* special case for sRGB gamma curve */
+		*r = (fabs(*r) <= 0.0031308) ?  12.92 * *r  :  1.055 * _apow(*r, 1.0/2.4) - 0.055;
+		*g = (fabs(*g) <= 0.0031308) ?  12.92 * *g  :  1.055 * _apow(*g, 1.0/2.4) - 0.055;
+		*b = (fabs(*b) <= 0.0031308) ?  12.92 * *b  :  1.055 * _apow(*b, 1.0/2.4) - 0.055;
+	}
+	else {
+		*r = _apow(*r, 1.0 / gamma);
+		*g = _apow(*g, 1.0 / gamma);
+		*b = _apow(*b, 1.0 / gamma);
+	}
 }
 
 
