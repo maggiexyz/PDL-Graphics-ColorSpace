@@ -14,6 +14,7 @@ struct pixel {
 /*** function defs ***/
 double  rgb_quant( double p, double q, double h );
 void    rgb2hsl( double *, double * );
+void    rgb2hsv( double *rgb, double *hsv );
 void    rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz );
 void    xyz2rgb( double *xyz, double gamma, double *m0, double *m1, double *m2, double *rgb );
 double  _apow( double a, double p );
@@ -40,7 +41,8 @@ double rgb_quant( double p, double q, double h )
 	else              { return p; }
 }
 
-void rgb2hsl( double *rgb, double *hsl )  {
+void rgb2hsl( double *rgb, double *hsl )
+{
     double r = *rgb;
     double g = *(rgb+1);
     double b = *(rgb+2);
@@ -88,6 +90,46 @@ void rgb2hsl( double *rgb, double *hsl )  {
 		*hsl *= 60.0;
 		if (*hsl < 0.0) *hsl += 360.0;
     }
+}
+
+
+void rgb2hsv( double *rgb, double *hsv )
+{
+    double r = *rgb;
+    double g = *(rgb+1);
+    double b = *(rgb+2);
+
+	/* compute the min and max */
+	double max = r;
+	if (max < g) max = g;
+	if (max < b) max = b;
+	double min = r;
+	if (g < min) min = g;
+	if (b < min) min = b;
+
+	/* got V */	
+	*(hsv+2) = max;
+
+	double delta = max - min;
+
+	if (delta > 0.0) {
+		/* got S */	
+		*(hsv+1) = delta / max;
+	}
+	else {
+		*hsv = 0;
+		*(hsv+1) = 0;
+		return;
+	}
+
+	/* getting H */	
+	*hsv = (r == max) ?  (g - b) / delta
+		 : (g == max) ?  2 + (b - r) / delta
+		 :               4 + (r - g) / delta
+		 ;
+
+	*hsv *= 60;
+	while (*hsv < 0) { *hsv += 360; }
 }
 
 

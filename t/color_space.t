@@ -17,7 +17,6 @@ sub tapprox {
 }
 
 
-
 # rgb_to_hsl   hsl_to_rgb
 {   
 	my $rgb = pdl( [255,255,255],[0,0,0],[255,10,50],[1,48,199] ) / 255;
@@ -28,6 +27,18 @@ sub tapprox {
 
 	my $a_rgb = hsl_to_rgb( $hsl );
 	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'hsl_to_rgb' ) or diag($a_rgb, $rgb);
+}
+
+# rgb_to_hsv   hsv_to_rgb
+{   
+	my $rgb = pdl( [255,255,255],[0,0,0],[255,10,50],[1,48,199] ) / 255;
+	my $hsv = pdl( [0,0,1], [0,0,0], [350.204081632653,1,0.519607843137255], [225.757575757576,0.99,0.392156862745098] );
+
+	my $a_hsv = rgb_to_hsv( $rgb );
+	is( tapprox( sum(abs($a_hsv - $hsv)), 0 ), 1, 'rgb_to_hsv' ) or diag($a_hsv, $hsv);
+
+	my $a_rgb = hsv_to_rgb( $hsv );
+	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'hsv_to_rgb' ) or diag($a_rgb, $rgb);
 }
 
 # rgb_to_xyz

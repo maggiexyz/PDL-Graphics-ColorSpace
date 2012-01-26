@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_rgb', 'lch_to_lab');
+pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_hsv', 'hsv_to_rgb', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_rgb', 'lch_to_lab');
 
 pp_addpm({At=>'Top'}, <<'EOD');
 
@@ -263,6 +263,109 @@ If C<rgb_to_hsl> encounters a bad value in any of the R, G, or B values the outp
 
 BADDOC
 );
+
+
+pp_def('rgb_to_hsv',
+    Pars => 'double rgb(n=3); double [o]hsv(m=3)',
+    Code => '
+        rgb2hsv($P(rgb), $P(hsv));
+    ',
+
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(rgb(n=>0)) || $ISBAD(rgb(n=>1)) || $ISBAD(rgb(n=>2))) {
+            loop (m) %{
+                $SETBAD(hsv());
+            %}
+            /* skip to the next hsv triple */
+        }
+        else {
+            rgb2hsv($P(rgb), $P(hsv));
+        }
+    ',
+
+    Doc => <<'DOCUMENTATION',
+
+=pod
+
+=for ref
+
+Converts an RGB color triple to an HSV color triple.
+
+The first dimension of the piddles holding the hsv and rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for usage
+
+Usage:
+
+	my $hsv = rgb_to_hsv( $rgb );
+
+=cut
+
+DOCUMENTATION
+    BadDoc => <<BADDOC,
+
+=for bad
+
+If C<rgb_to_hsv> encounters a bad value in any of the R, G, or B values the output piddle will be marked as bad and the associated H, S, and V values will all be marked as bad.
+
+=cut
+
+BADDOC
+);
+
+
+pp_def('hsv_to_rgb',
+    Pars => 'double hsv(n=3); double [o]rgb(m=3)',
+    Code => '
+        hsv2rgb($P(hsv), $P(rgb));
+    ',
+
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(hsv(n=>0)) || $ISBAD(hsv(n=>1)) || $ISBAD(hsv(n=>2))) {
+            loop (m) %{
+                $SETBAD(rgb());
+            %}
+            /* skip to the next rgb triple */
+        }
+        else {
+            hsv2rgb($P(hsv), $P(rgb));
+        }
+    ',
+
+    Doc => <<'DOCUMENTATION',
+
+=pod
+
+=for ref
+
+Converts an HSV color triple to an RGB color triple
+
+The first dimension of the piddles holding the hsv and rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for usage
+
+Usage:
+
+	my $rgb = hsv_to_rgb( $hsv );
+
+=cut
+
+DOCUMENTATION
+    BadDoc => <<BADDOC,
+
+=for bad
+
+If C<hsv_to_rgb> encounters a bad value in any of the H, S, or V quantities, the output piddle will be marked as bad and the associated R, G, and B color values will all be marked as bad.
+
+=cut
+
+BADDOC
+);
+
 
 pp_def('xyY_to_xyz',
     Pars => 'double xyY(c=3); double [o]xyz(c=3)',
