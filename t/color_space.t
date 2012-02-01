@@ -39,6 +39,14 @@ sub tapprox {
 
 	my $a_rgb = hsv_to_rgb( $hsv );
 	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'hsv_to_rgb' ) or diag($a_rgb, $rgb);
+
+	my $rgb_bad   = $rgb->copy->setbadat(1,2);
+	my $a_hsv_bad = rgb_to_hsv($rgb_bad);
+	is( tapprox( sum(abs($a_hsv_bad - $hsv)), 0 ), 1, 'rgb_to_hsv with bad value' ) or diag($a_hsv_bad, $hsv);
+
+	my $hsv_bad   = $hsv->copy->setbadat(0,3);
+	my $a_rgb_bad = hsv_to_rgb($hsv_bad);
+	is( tapprox( sum(abs($a_rgb_bad - $rgb)), 0 ), 1, 'hsv_to_rgb with bad value' ) or diag($a_rgb_bad, $rgb);
 }
 
 # rgb_to_xyz

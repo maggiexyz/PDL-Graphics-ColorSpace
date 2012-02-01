@@ -89,7 +89,8 @@ void rgb2hsl( double *rgb, double *hsl )
 			*hsl = 4.0 + (r - g) / delta;
 		}
 		*hsl *= 60.0;
-		if (*hsl < 0.0) *hsl += 360.0;
+		while (*hsl < 0.0)   { *hsl += 360; }
+		while (*hsl > 360.0) { *hsl -= 360; }
     }
 }
 
@@ -130,13 +131,60 @@ void rgb2hsv( double *rgb, double *hsv )
 		 ;
 
 	*hsv *= 60;
-	while (*hsv < 0) { *hsv += 360; }
+	while (*hsv < 0.0)    { *hsv += 360; }
+	while (*hsv >= 360.0) { *hsv -= 360; }
 }
+
 
 void hsv2rgb( double *hsv, double *rgb )
 {
+    double h = *hsv;
+    double s = *(hsv+1);
+    double v = *(hsv+2);
 
+	h /= 60.0;
+	double i = floor( h );
+	double f = h - i;
+
+	double p = v * (1 - s);
+	double q = v * (1 - s * f);
+	double t = v * (1 - s * (1 - f));
+
+	switch( (int) i )
+	{
+		case 0:
+			*rgb     = v;
+			*(rgb+1) = t;
+			*(rgb+2) = p;
+			break;
+		case 1:
+			*rgb     = q;
+			*(rgb+1) = v;
+			*(rgb+2) = p;
+			break;
+		case 2:
+			*rgb     = p;
+			*(rgb+1) = v;
+			*(rgb+2) = t;
+			break;
+		case 3:
+			*rgb     = p;
+			*(rgb+1) = q;
+			*(rgb+2) = v;
+			break;
+		case 4:
+			*rgb     = t;
+			*(rgb+1) = p;
+			*(rgb+2) = v;
+			break;
+		default:
+			*rgb     = v;
+			*(rgb+1) = p;
+			*(rgb+2) = q;
+			break;
+	}
 }
+
 
 void rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz )
 {
