@@ -10,7 +10,7 @@ PDL::Graphics::ColorSpace
 
 =head1 VERSION
 
-0.0.3
+0.0.4
 
 =head1 DESCRIPTION
 
