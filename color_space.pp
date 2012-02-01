@@ -215,7 +215,7 @@ BADDOC
 
 
 pp_def('rgb_to_hsl',
-    Pars => 'double rgb(n=3); double [o]hsl(m=3)',
+    Pars => 'double rgb(c=3); double [o]hsl(c=3)',
     Code => '
         rgb2hsl($P(rgb), $P(hsl));
     ',
@@ -223,8 +223,8 @@ pp_def('rgb_to_hsl',
     HandleBad => 1,
     BadCode => '
         /* First check for bad values */
-        if ($ISBAD(rgb(n=>0)) || $ISBAD(rgb(n=>1)) || $ISBAD(rgb(n=>2))) {
-            loop (m) %{
+        if ($ISBAD(rgb(c=>0)) || $ISBAD(rgb(c=>1)) || $ISBAD(rgb(c=>2))) {
+            loop (c) %{
                 $SETBAD(hsl());
             %}
             /* skip to the next hsl triple */
@@ -266,7 +266,7 @@ BADDOC
 
 
 pp_def('rgb_to_hsv',
-    Pars => 'double rgb(n=3); double [o]hsv(m=3)',
+    Pars => 'double rgb(c=3); double [o]hsv(c=3)',
     Code => '
         rgb2hsv($P(rgb), $P(hsv));
     ',
@@ -274,8 +274,8 @@ pp_def('rgb_to_hsv',
     HandleBad => 1,
     BadCode => '
         /* First check for bad values */
-        if ($ISBAD(rgb(n=>0)) || $ISBAD(rgb(n=>1)) || $ISBAD(rgb(n=>2))) {
-            loop (m) %{
+        if ($ISBAD(rgb(c=>0)) || $ISBAD(rgb(c=>1)) || $ISBAD(rgb(c=>2))) {
+            loop (c) %{
                 $SETBAD(hsv());
             %}
             /* skip to the next hsv triple */
@@ -317,7 +317,7 @@ BADDOC
 
 
 pp_def('hsv_to_rgb',
-    Pars => 'double hsv(n=3); double [o]rgb(m=3)',
+    Pars => 'double hsv(c=3); double [o]rgb(c=3)',
     Code => '
         hsv2rgb($P(hsv), $P(rgb));
     ',
@@ -325,8 +325,8 @@ pp_def('hsv_to_rgb',
     HandleBad => 1,
     BadCode => '
         /* First check for bad values */
-        if ($ISBAD(hsv(n=>0)) || $ISBAD(hsv(n=>1)) || $ISBAD(hsv(n=>2))) {
-            loop (m) %{
+        if ($ISBAD(hsv(c=>0)) || $ISBAD(hsv(c=>1)) || $ISBAD(hsv(c=>2))) {
+            loop (c) %{
                 $SETBAD(rgb());
             %}
             /* skip to the next rgb triple */
@@ -825,6 +825,8 @@ Graphics::ColorObject
 =head1 AUTHOR
 
 Copyright (C) 2012 Maggie J. Xiong <maggiexyz+github@gmail.com>
+
+Original work sponsored by Shutterstock, LLC L<http://www.shutterstock.com/>
 
 All rights reserved. There is no warranty. You are allowed to redistribute this software / documentation as described in the file COPYING in the PDL distribution.
 

@@ -15,6 +15,7 @@ struct pixel {
 double  rgb_quant( double p, double q, double h );
 void    rgb2hsl( double *, double * );
 void    rgb2hsv( double *rgb, double *hsv );
+void    hsv2rgb( double *hsv, double *rgb );
 void    rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz );
 void    xyz2rgb( double *xyz, double gamma, double *m0, double *m1, double *m2, double *rgb );
 double  _apow( double a, double p );
@@ -132,6 +133,10 @@ void rgb2hsv( double *rgb, double *hsv )
 	while (*hsv < 0) { *hsv += 360; }
 }
 
+void hsv2rgb( double *hsv, double *rgb )
+{
+
+}
 
 void rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz )
 {
