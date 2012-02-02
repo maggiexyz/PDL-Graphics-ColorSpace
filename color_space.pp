@@ -10,7 +10,7 @@ PDL::Graphics::ColorSpace
 
 =head1 VERSION
 
-0.0.5
+0.0.6
 
 =head1 DESCRIPTION
 
@@ -804,6 +804,8 @@ sub PDL::lch_to_rgb {
 Graphics::ColorObject
 
 =head1 AUTHOR
+
+~~~~~~~~~~~~ ~~~~~ ~~~~~~~~ ~~~~~ ~~~ `` ><(((">
 
 Copyright (C) 2012 Maggie J. Xiong <maggiexyz+github@gmail.com>
 
