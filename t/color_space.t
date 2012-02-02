@@ -27,6 +27,14 @@ sub tapprox {
 
 	my $a_rgb = hsl_to_rgb( $hsl );
 	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'hsl_to_rgb' ) or diag($a_rgb, $rgb);
+
+	my $rgb_bad   = $rgb->copy->setbadat(1,2);
+	my $a_hsl_bad = rgb_to_hsl($rgb_bad);
+	is( tapprox( sum(abs($a_hsl_bad - $hsl)), 0 ), 1, 'rgb_to_hsl with bad value' ) or diag($a_hsl_bad, $hsl);
+
+	my $hsl_bad   = $hsl->copy->setbadat(0,3);
+	my $a_rgb_bad = hsl_to_rgb($hsl_bad);
+	is( tapprox( sum(abs($a_rgb_bad - $rgb)), 0 ), 1, 'hsl_to_rgb with bad value' ) or diag($a_rgb_bad, $rgb);
 }
 
 # rgb_to_hsv   hsv_to_rgb

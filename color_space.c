@@ -13,7 +13,8 @@ struct pixel {
 
 /*** function defs ***/
 double  rgb_quant( double p, double q, double h );
-void    rgb2hsl( double *, double * );
+void    rgb2hsl( double *rgb, double *hsl );
+void    hsl2rgb( double *hsl, double *rgb );
 void    rgb2hsv( double *rgb, double *hsv );
 void    hsv2rgb( double *hsv, double *rgb );
 void    rgb2xyz( double *rgb, double gamma, double *m0, double *m1, double *m2, double *xyz );
@@ -41,6 +42,30 @@ double rgb_quant( double p, double q, double h )
 	else if (h < 240) { return p + (q-p)*(240-h)/60; }
 	else              { return p; }
 }
+
+
+void hsl2rgb( double *hsl, double *rgb )
+{
+	double h = *hsl; 
+	double s = *(hsl+1);
+	double l = *(hsl+2);
+
+    double p, q;
+
+	if ( l <= 0.5) {
+		p = l*(1 - s);
+		q = 2*l - p;
+	}
+	else {
+		q = l + s - (l*s);
+		p = 2*l - q;
+	}
+	
+	*rgb = rgb_quant(p, q, h+120);
+	*(rgb+1) = rgb_quant(p, q, h);
+	*(rgb+2) = rgb_quant(p, q, h-120);
+}
+
 
 void rgb2hsl( double *rgb, double *hsl )
 {

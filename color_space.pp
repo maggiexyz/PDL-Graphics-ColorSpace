@@ -113,6 +113,15 @@ Some conversions require specifying the RGB space which includes gamma curve and
 	sRGB [709] [CIE Rec 709]
 
 
+=head1 CONVERSIONS
+
+The full list of exported functions include rgb_to_hsl, hsl_to_rgb, rgb_to_hsv, hsv_to_rgb, rgb_to_xyz, xyz_to_rgb, xyY_to_xyz, xyz_to_lab, lab_to_xyz, lab_to_lch, lch_to_lab, rgb_to_lch, lch_to_rgb, lch_to_lab.
+
+Some conversions, if not already included as functions, can be achieved by chaining existing functions. For example, RGB to Lab conversion can be achieved by chaining rgb_to_xyz and xyz_to_lab.
+
+    my $lab = xyz_to_lab( rgb_to_xyz( $rgb, 'sRGB' ), 'sRGB' );
+
+
 =cut
 
 use strict;
@@ -136,83 +145,6 @@ pp_addhdr('
 #include "color_space.h"  /* Local decs */
 '
 );
-
-my $hsl_to_rgb_code = q{
-	h = $hsl(n=>0);
-	s = $hsl(n=>1);
-	l = $hsl(n=>2);
-
-	if ( l <= 0.5) {
-		p = l*(1 - s);
-		q = 2*l - p;
-	}
-	else {
-		q = l + s - (l*s);
-		p = 2*l - q;
-	}
-	
-	$rgb(m=>0) = rgb_quant(p, q, h+120);
-	$rgb(m=>1) = rgb_quant(p, q, h);
-	$rgb(m=>2) = rgb_quant(p, q, h-120);
-};
-
-pp_def('hsl_to_rgb',
-    Pars => 'double hsl(n=3); double [o]rgb(m=3)',
-    Code => q[
-        $GENERIC(hsl) h, s, l, p, q;
-        
-        threadloop %{
-            ] . $hsl_to_rgb_code . q[
-        %}
-    ],
-    HandleBad => 1,
-    BadCode => q[
-        $GENERIC(hsl) h, s, l, p, q;
-        
-        threadloop %{
-            /* First check for bad values */
-            if ($ISBAD(hsl(n=>0)) || $ISBAD(hsl(n=>1)) || $ISBAD(hsl(n=>2))) {
-                loop (m) %{
-                    $SETBAD(rgb());
-                %}
-                /* skip to the next hsl triple */
-            }
-            else {
-            ] . $hsl_to_rgb_code . q[
-            }
-        %}
-    ],
-
-    Doc => <<'DOCUMENTATION',
-
-=pod
-
-=for ref
-
-Converts an HSL color triple to an RGB color triple
-
-The first dimension of the piddles holding the hsl and rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
-
-=for usage
-
-Usage:
-
-	my $rgb = hsl_to_rgb( $hsl );
-
-=cut
-
-DOCUMENTATION
-    BadDoc => <<BADDOC,
-
-=for bad
-
-If C<hsl_to_rgb> encounters a bad value in any of the H, S, or V quantities, the output piddle will be marked as bad and the associated R, G, and B color values will all be marked as bad.
-
-=cut
-
-BADDOC
-);
-
 
 pp_def('rgb_to_hsl',
     Pars => 'double rgb(c=3); double [o]hsl(c=3)',
@@ -258,6 +190,55 @@ DOCUMENTATION
 =for bad
 
 If C<rgb_to_hsl> encounters a bad value in any of the R, G, or B values the output piddle will be marked as bad and the associated H, S, and L values will all be marked as bad.
+
+=cut
+
+BADDOC
+);
+
+
+pp_def('hsl_to_rgb',
+    Pars => 'double hsl(c=3); double [o]rgb(c=3)',
+    Code => '
+        hsl2rgb($P(hsl), $P(rgb));
+    ',
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(hsl(c=>0)) || $ISBAD(hsl(c=>1)) || $ISBAD(hsl(c=>2))) {
+            loop (c) %{
+                $SETBAD(rgb());
+            %}
+            /* skip to the next hsl triple */
+        }
+        else {
+            hsl2rgb($P(hsl), $P(rgb));
+        }
+    ',
+    Doc => <<'DOCUMENTATION',
+
+=pod
+
+=for ref
+
+Converts an HSL color triple to an RGB color triple
+
+The first dimension of the piddles holding the hsl and rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...).
+
+=for usage
+
+Usage:
+
+	my $rgb = hsl_to_rgb( $hsl );
+
+=cut
+
+DOCUMENTATION
+    BadDoc => <<BADDOC,
+
+=for bad
+
+If C<hsl_to_rgb> encounters a bad value in any of the H, S, or V quantities, the output piddle will be marked as bad and the associated R, G, and B color values will all be marked as bad.
 
 =cut
 
