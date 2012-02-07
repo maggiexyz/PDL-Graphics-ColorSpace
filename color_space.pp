@@ -12,14 +12,9 @@ PDL::Graphics::ColorSpace
 
 0.0.7
 
-=cut
-
-our $VERSION = '0.0.7';
-
-
 =head1 DESCRIPTION
 
-Derived from Graphics::ColorObject (Izvorski & Reibenschuh, 2005). Converts between color spaces.
+Does image color space conversions such as RGB to XYZ and Lab to LCH. Derived from Graphics::ColorObject (Izvorski & Reibenschuh, 2005) but since it's implemented in C and PDL, it runs *much* faster.
 
 Often the conversion will return out-of-gamut values. Retaining out-of-gamut values allows chained conversions to be lossless and reverse conversions to produce the original values. You can clip the values to be within-gamut if necessary. Please check the specific color space for the gamut range.
 
@@ -431,10 +426,10 @@ pp_def('_xyz_to_lab',
 		/* construct white point */
 		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
 		double xyz_white[3];
-		xyY2xyz( &xyY, &xyz_white );
+		xyY2xyz( &xyY[0], &xyz_white[0] );
 
 		threadloop %{
-	        xyz2lab( $P(xyz), &xyz_white, $P(lab) );
+	        xyz2lab( $P(xyz), &xyz_white[0], $P(lab) );
 		%}
     ',
 	Doc => undef,
@@ -444,7 +439,7 @@ pp_def('_xyz_to_lab',
 		/* construct white point */
 		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
 		double xyz_white[3];
-		xyY2xyz( &xyY, &xyz_white );
+		xyY2xyz( &xyY[0], &xyz_white[0] );
 
 		threadloop %{
 			/* First check for bad values */
@@ -455,7 +450,7 @@ pp_def('_xyz_to_lab',
 				/* skip to the next xyz triple */
 			}
 			else {
-				xyz2lab( $P(xyz), &xyz_white, $P(lab) );
+				xyz2lab( $P(xyz), &xyz_white[0], $P(lab) );
 			}
 		%}
     ',
@@ -469,10 +464,10 @@ pp_def('_lab_to_xyz',
 		/* construct white point */
 		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
 		double xyz_white[3];
-		xyY2xyz( &xyY, &xyz_white );
+		xyY2xyz( &xyY[0], &xyz_white[0] );
 
 		threadloop %{
-	        lab2xyz( $P(lab), &xyz_white, $P(xyz) );
+	        lab2xyz( $P(lab), &xyz_white[0], $P(xyz) );
 		%}
     ',
 	Doc => undef,
@@ -482,7 +477,7 @@ pp_def('_lab_to_xyz',
 		/* construct white point */
 		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
 		double xyz_white[3];
-		xyY2xyz( &xyY, &xyz_white );
+		xyY2xyz( &xyY[0], &xyz_white[0] );
 
 		threadloop %{
 			/* First check for bad values */
@@ -493,7 +488,7 @@ pp_def('_lab_to_xyz',
 				/* skip to the next lab triple */
 			}
 			else {
-				lab2xyz( $P(lab), &xyz_white, $P(xyz) );
+				lab2xyz( $P(lab), &xyz_white[0], $P(xyz) );
 			}
 		%}
     ',

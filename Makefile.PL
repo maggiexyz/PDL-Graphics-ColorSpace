@@ -8,7 +8,7 @@ $hash{'OBJECT'} .= ' color_space$(OBJ_EXT)';
 $hash{'clean'}{FILES} .= ' color_space$(OBJ_EXT)';
 
 WriteMakefile( %hash,
-	VERSION             => '0.0.6',
+	VERSION             => '0.0.7',
     AUTHOR              => 'Maggie J. Xiong  <maggiexyz+github gmail.com>',
 	PM => {
 		'ColorSpace.pm'           => '$(INST_LIBDIR)/ColorSpace.pm',
