@@ -1,0 +1,9 @@
+Revision history for PDL-Graphics-ColorSpace
+
+0.0.7	02-07-2012
+		Fixed double * warnings. Thanks Sisypus!
+		Added README and Changes.
+
+0.0.6	02-01-2012
+		First version released on an unsuspecting world.
+

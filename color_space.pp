@@ -10,7 +10,12 @@ PDL::Graphics::ColorSpace
 
 =head1 VERSION
 
-0.0.6
+0.0.7
+
+=cut
+
+our $VERSION = '0.0.7';
+
 
 =head1 DESCRIPTION
 

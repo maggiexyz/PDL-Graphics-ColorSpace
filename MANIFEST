@@ -1,4 +1,6 @@
 MANIFEST
+Changes
+README
 Makefile.PL
 ColorSpace/RGBSpace.pm
 color_space.pp
