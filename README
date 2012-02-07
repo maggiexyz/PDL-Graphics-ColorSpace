@@ -30,6 +30,13 @@ perldoc command.
 
     perldoc PDL::Graphics::ColorSpace
 
+Please email author for questions regarding color conversions in this module. Please email PDL mailing list for general questions regarding PDL
+	http://pdl.perl.org/?page=mailing-lists
+
+Please file bugs or requests at
+	https://github.com/maggiexyz/PDL-Graphics-ColorSpace
+
+
 You can also look for information at:
 
     RT, CPAN's request tracker (report bugs here)
