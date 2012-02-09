@@ -13,6 +13,8 @@ struct pixel {
 
 /*** function defs ***/
 double  rgb_quant( double p, double q, double h );
+void    rgb2cmyk( double *rgb, double *cmyk );
+void    cmyk2rgb( double *cmyk, double *rgb );
 void    rgb2hsl( double *rgb, double *hsl );
 void    hsl2rgb( double *hsl, double *rgb );
 void    rgb2hsv( double *rgb, double *hsv );
@@ -41,6 +43,33 @@ double rgb_quant( double p, double q, double h )
 	else if (h < 180) { return q; }
 	else if (h < 240) { return p + (q-p)*(240-h)/60; }
 	else              { return p; }
+}
+
+
+void rgb2cmyk( double *rgb, double *cmyk )
+{
+	struct pixel  cmy = { 1.0-*rgb, 1.0-*(rgb+1), 1.0-*(rgb+2) };
+
+	double k = cmy.a;
+	if (cmy.b < k)  k = cmy.b; 
+	if (cmy.c < k)  k = cmy.c; 
+
+	*cmyk     = cmy.a - k;
+	*(cmyk+1) = cmy.b - k;
+	*(cmyk+2) = cmy.c - k;
+	*(cmyk+3) = k;
+}
+
+
+void cmyk2rgb( double *cmyk, double *rgb )
+{
+	double k = *(cmyk+3);
+
+	struct pixel cmy = { *cmyk + k, *(cmyk+1) + k, *(cmyk+2) + k };
+
+	*rgb     = 1.0 - cmy.a;
+	*(rgb+1) = 1.0 - cmy.b;
+	*(rgb+2) = 1.0 - cmy.c;
 }
 
 

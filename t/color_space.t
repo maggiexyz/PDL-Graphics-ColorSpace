@@ -37,6 +37,31 @@ sub tapprox {
 	is( tapprox( sum(abs($a_rgb_bad - $rgb)), 0 ), 1, 'hsl_to_rgb with bad value' ) or diag($a_rgb_bad, $rgb);
 }
 
+# rgb_to_cmyk   cmyk_to_rgb
+{   
+	my $rgb = pdl( [255,255,255],[0,0,0],[255,10,50],[1,48,199] ) / 255;
+	my $cmyk = pdl(
+		[0,0,0,0],
+		[0,0,0,1],
+		[0,0.960784313725491,0.803921568627451,1.11022302462516e-16],
+		[0.776470588235295, 0.592156862745098, 0, 0.219607843137255]
+	);
+
+	my $a_cmyk = rgb_to_cmyk( $rgb );
+	is( tapprox( sum(abs($a_cmyk - $cmyk)), 0 ), 1, 'rgb_to_cmyk' ) or diag($a_cmyk, $cmyk);
+
+	my $a_rgb = cmyk_to_rgb( $cmyk );
+	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'cmyk_to_rgb' ) or diag($a_rgb, $rgb);
+
+	my $rgb_bad   = $rgb->copy->setbadat(1,2);
+	my $a_cmyk_bad = rgb_to_cmyk($rgb_bad);
+	is( tapprox( sum(abs($a_cmyk_bad - $cmyk)), 0 ), 1, 'rgb_to_cmyk with bad value' ) or diag($a_cmyk_bad, $cmyk);
+
+	my $cmyk_bad   = $cmyk->copy->setbadat(0,3);
+	my $a_rgb_bad = cmyk_to_rgb($cmyk_bad);
+	is( tapprox( sum(abs($a_rgb_bad - $rgb)), 0 ), 1, 'cmyk_to_rgb with bad value' ) or diag($a_rgb_bad, $rgb);
+}
+
 # rgb_to_hsv   hsv_to_rgb
 {   
 	my $rgb = pdl( [255,255,255],[0,0,0],[255,10,50],[1,48,199] ) / 255;

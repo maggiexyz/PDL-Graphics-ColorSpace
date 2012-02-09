@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_hsv', 'hsv_to_rgb', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_rgb', 'lch_to_lab');
+pp_add_exported('', 'rgb_to_cmyk', 'cmyk_to_rgb', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_hsv', 'hsv_to_rgb', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_rgb', 'lch_to_lab');
 
 pp_addpm({At=>'Top'}, <<'EOD');
 
@@ -10,7 +10,7 @@ PDL::Graphics::ColorSpace
 
 =head1 VERSION
 
-0.0.7
+0.0.8
 
 =head1 DESCRIPTION
 
@@ -27,6 +27,14 @@ An RGB color space is any additive color space based on the RGB color model. A p
 For more info on the RGB color space, see L<http://en.wikipedia.org/wiki/RGB_color_space>.
 
 This module expects and produces RGB values normalized to be in the range of [0,1]. If you have / need integer value between [0,255], divide or multiply the values by 255.
+
+=head2 CMYK
+
+CMYK refers to the four inks used in some color printing: cyan, magenta, yellow, and key (black). The CMYK model works by partially or entirely masking colors on a lighter, usually white, background. The ink reduces the light that would otherwise be reflected. Such a model is called subtractive because inks "subtract" brightness from white.
+
+In additive color models such as RGB, white is the "additive" combination of all primary colored lights, while black is the absence of light. In the CMYK model, it is the opposite: white is the natural color of the paper or other background, while black results from a full combination of colored inks. To save money on ink, and to produce deeper black tones, unsaturated and dark colors are produced by using black ink instead of the combination of cyan, magenta and yellow.
+
+For more info, see L<http://en.wikipedia.org/wiki/CMYK_color_model>.
 
 =head2 HSL
 
@@ -115,7 +123,7 @@ Some conversions require specifying the RGB space which includes gamma curve and
 
 =head1 CONVERSIONS
 
-The full list of exported functions include rgb_to_hsl, hsl_to_rgb, rgb_to_hsv, hsv_to_rgb, rgb_to_xyz, xyz_to_rgb, xyY_to_xyz, xyz_to_lab, lab_to_xyz, lab_to_lch, lch_to_lab, rgb_to_lch, lch_to_rgb, lch_to_lab.
+The full list of exported functions include rgb_to_cmyk, cmyk_to_rgb, rgb_to_hsl, hsl_to_rgb, rgb_to_hsv, hsv_to_rgb, rgb_to_xyz, xyz_to_rgb, xyY_to_xyz, xyz_to_lab, lab_to_xyz, lab_to_lch, lch_to_lab, rgb_to_lch, lch_to_rgb, lch_to_lab.
 
 Some conversions, if not already included as functions, can be achieved by chaining existing functions. For example, RGB to Lab conversion can be achieved by chaining rgb_to_xyz and xyz_to_lab.
 
@@ -145,6 +153,106 @@ pp_addhdr('
 #include "color_space.h"  /* Local decs */
 '
 );
+
+pp_def('rgb_to_cmyk',
+    Pars => 'double rgb(c=3); double [o]cmyk(d=4)',
+    Code => '
+        rgb2cmyk($P(rgb), $P(cmyk));
+    ',
+
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(rgb(c=>0)) || $ISBAD(rgb(c=>1)) || $ISBAD(rgb(c=>2))) {
+            loop (d) %{
+                $SETBAD(cmyk());
+            %}
+            /* skip to the next cmyk triple */
+        }
+        else {
+            rgb2cmyk($P(rgb), $P(cmyk));
+        }
+    ',
+
+    Doc => <<'DOCUMENTATION',
+
+=pod
+
+=for ref
+
+Converts an RGB color triple to an CYMK color quadruple.
+
+The first dimension of the piddles holding the rgb values must be size 3, i.e. the dimensions must look like (3, m, n, ...). The first dimension of the piddles holding the cmyk values must be size 4.
+
+=for usage
+
+Usage:
+
+	my $cmyk = rgb_to_cmyk( $rgb );
+
+=cut
+
+DOCUMENTATION
+    BadDoc => <<BADDOC,
+
+=for bad
+
+If C<rgb_to_cmyk> encounters a bad value in any of the R, G, or B values the output piddle will be marked as bad and the associated C, M, Y, and K values will all be marked as bad.
+
+=cut
+
+BADDOC
+);
+
+
+pp_def('cmyk_to_rgb',
+    Pars => 'double cmyk(d=4); double [o]rgb(c=3)',
+    Code => '
+        cmyk2rgb($P(cmyk), $P(rgb));
+    ',
+    HandleBad => 1,
+    BadCode => '
+        /* First check for bad values */
+        if ($ISBAD(cmyk(d=>0)) || $ISBAD(cmyk(d=>1)) || $ISBAD(cmyk(d=>2)) || $ISBAD(cmyk(d=>3))) {
+            loop (c) %{
+                $SETBAD(rgb());
+            %}
+            /* skip to the next cmyk triple */
+        }
+        else {
+            cmyk2rgb($P(cmyk), $P(rgb));
+        }
+    ',
+    Doc => <<'DOCUMENTATION',
+
+=pod
+
+=for ref
+
+Converts an CYMK color quadruple to an RGB color triple
+
+The first dimension of the piddles holding the cmyk values must be size 4, i.e. the dimensions must look like (4, m, n, ...). The first dimension of the piddle holding the rgb values must be 3.
+
+=for usage
+
+Usage:
+
+	my $rgb = cmyk_to_rgb( $cmyk );
+
+=cut
+
+DOCUMENTATION
+    BadDoc => <<BADDOC,
+
+=for bad
+
+If C<cmyk_to_rgb> encounters a bad value in any of the C, M, Y, or K quantities, the output piddle will be marked as bad and the associated R, G, and B color values will all be marked as bad.
+
+=cut
+
+BADDOC
+);
+
 
 pp_def('rgb_to_hsl',
     Pars => 'double rgb(c=3); double [o]hsl(c=3)',

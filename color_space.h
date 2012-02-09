@@ -1,5 +1,7 @@
 /* prototypes of functions in color_space.c */
 double  rgb_quant( double p, double q, double h );
+void    rgb2cmyk( double *rgb, double *cmyk );
+void    cmyk2rgb( double *cmyk, double *rgb );
 void    rgb2hsl( double *rgb, double *hsl );
 void    hsl2rgb( double *hsl, double *rgb );
 void    rgb2hsv( double *rgb, double *hsv );
