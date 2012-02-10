@@ -2,6 +2,10 @@
 
 pp_add_exported('', 'rgb_to_cmyk', 'cmyk_to_rgb', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_hsv', 'hsv_to_rgb', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_rgb', 'lch_to_lab');
 
+$PDL::Graphics::ColorSpace::VERSION = '0.0.8';
+
+pp_setversion($PDL::Graphics::ColorSpace::VERSION);
+
 pp_addpm({At=>'Top'}, <<'EOD');
 
 =head1 NAME

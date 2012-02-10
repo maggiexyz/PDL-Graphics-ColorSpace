@@ -2,6 +2,7 @@ Revision history for PDL-Graphics-ColorSpace
 
 0.0.8	02-09-2012
 		Added CMYK and RGB conversions.
+		Better handling of versions.
 
 0.0.7	02-07-2012
 		Fixed double * warnings. Thanks Sisypus!
