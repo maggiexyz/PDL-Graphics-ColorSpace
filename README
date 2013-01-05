@@ -3,11 +3,6 @@ PDL-Graphics-ColorSpace
 Does color space conversions such as RGB to XYZ and Lab to LCH. Derived from Graphics::ColorObject but since it's implemented in C and PDL, it runs *much* faster.
 
 
-VERSION
-
-0.0.7
-
-
 DEPENDENCIES
 
 PDL

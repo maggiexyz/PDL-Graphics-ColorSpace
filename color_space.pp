@@ -1,8 +1,8 @@
 #!/usr/bin/perl
 
-pp_add_exported('', 'rgb_to_cmyk', 'cmyk_to_rgb', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_hsv', 'hsv_to_rgb', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_rgb', 'lch_to_lab');
+pp_add_exported('', 'rgb_to_cmyk', 'cmyk_to_rgb', 'hsl_to_rgb', 'rgb_to_hsl', 'rgb_to_hsv', 'hsv_to_rgb', 'rgb_to_xyz', 'xyz_to_rgb', 'xyY_to_xyz', 'xyz_to_lab', 'lab_to_xyz', 'lab_to_lch', 'lch_to_lab', 'rgb_to_lch', 'lch_to_rgb', 'lch_to_lab', 'add_rgb_space');
 
-$PDL::Graphics::ColorSpace::VERSION = '0.0.9';
+$PDL::Graphics::ColorSpace::VERSION = '0.1.0';
 
 pp_setversion("'$PDL::Graphics::ColorSpace::VERSION'");
 
@@ -14,7 +14,7 @@ PDL::Graphics::ColorSpace
 
 =head1 VERSION
 
-0.0.9
+0.1.0
 
 =head1 DESCRIPTION
 
@@ -48,13 +48,13 @@ The HSL color space defines colors more naturally: Hue specifies the base color,
 
 Hue is specified here as degrees ranging from 0 to 360. There are 6 base colors:
 
-	0	red
-	60	yellow
-	120	green
-	180	cyan
-	240	blue
-	300	magenta
-	360	red
+    0    red
+    60    yellow
+    120    green
+    180    cyan
+    240    blue
+    300    magenta
+    360    red
 
 Saturation specifies the distance from the middle of the color wheel. So a saturation value of 0 (0%) means "center of the wheel", i.e. a grey value, whereas a saturation value of 1 (100%) means "at the border of the wheel", where the color is fully saturated.
 
@@ -88,41 +88,43 @@ For more info, see L<http://www.colourphil.co.uk/lab_lch_colour_space.html>.
 
 =head1 SYNOPSIS
 
-	use PDL::LiteF;
-	use PDL::IO::Pic;
-	use PDL::Graphics::ColorSpace;
+    use PDL::LiteF;
+    use PDL::IO::Pic;
+    use PDL::Graphics::ColorSpace;
 
-	my $image_rgb = PDL->rpic('photo.jpg') if PDL->rpiccan('JPEG');
+    my $image_rgb = PDL->rpic('photo.jpg') if PDL->rpiccan('JPEG');
 
-	# convert RGB value from [0,255] to [0,1]
-	$image_rgb = $image_rgb->double / 255;
+    # convert RGB value from [0,255] to [0,1]
+    $image_rgb = $image_rgb->double / 255;
 
-	my $image_xyz = $image_rgb->rgb_to_xyz( 'sRGB' );
+    my $image_xyz = $image_rgb->rgb_to_xyz( 'sRGB' );
 
 Or
 
-	my $image_xyz = rgb_to_xyz( $image_rgb, 'sRGB' );
+    my $image_xyz = rgb_to_xyz( $image_rgb, 'sRGB' );
 
 =head1 OPTIONS
 
 Some conversions require specifying the RGB space which includes gamma curve and white point definitions. Supported RGB space include (aliases in square brackets):
 
-	Adobe RGB (1998) [Adobe]
-	Apple RGB [Apple]
-	BestRGB
-	Beta RGB
-	BruceRGB
-	CIE
-	ColorMatch
-	DonRGB4
-	ECI
-	Ekta Space PS5
-	NTSC [601] [CIE Rec 601]
-	PAL/SECAM [PAL] [CIE ITU]
-	ProPhoto
-	SMPTE-C [SMPTE]
-	WideGamut
-	sRGB [709] [CIE Rec 709]
+    Adobe RGB (1998) [Adobe]
+    Apple RGB [Apple]
+    BestRGB
+    Beta RGB
+    BruceRGB
+    CIE
+    ColorMatch
+    DonRGB4
+    ECI
+    Ekta Space PS5
+    NTSC [601] [CIE Rec 601]
+    PAL/SECAM [PAL] [CIE ITU]
+    ProPhoto
+    SMPTE-C [SMPTE]
+    WideGamut
+    sRGB [709] [CIE Rec 709]
+
+You can also add custom RGB space definitions via the function add_rgb_space.
 
 
 =head1 CONVERSIONS
@@ -145,10 +147,7 @@ use PDL::Graphics::ColorSpace::RGBSpace;
 
 $PDL::onlinedoc->scan(__FILE__) if $PDL::onlinedoc;
 
-my $RGB_SPACE   = $PDL::Graphics::ColorSpace::RGBSpace::RGB_SPACE;
-my $WHITE_POINT = $PDL::Graphics::ColorSpace::RGBSpace::WHITE_POINT;
-
-
+my $RGB_SPACE = $PDL::Graphics::ColorSpace::RGBSpace::RGB_SPACE;
 
 EOD
 
@@ -192,7 +191,7 @@ The first dimension of the piddles holding the rgb values must be size 3, i.e. t
 
 Usage:
 
-	my $cmyk = rgb_to_cmyk( $rgb );
+    my $cmyk = rgb_to_cmyk( $rgb );
 
 =cut
 
@@ -241,7 +240,7 @@ The first dimension of the piddles holding the cmyk values must be size 4, i.e. 
 
 Usage:
 
-	my $rgb = cmyk_to_rgb( $cmyk );
+    my $rgb = cmyk_to_rgb( $cmyk );
 
 =cut
 
@@ -292,7 +291,7 @@ The first dimension of the piddles holding the hsl and rgb values must be size 3
 
 Usage:
 
-	my $hsl = rgb_to_hsl( $rgb );
+    my $hsl = rgb_to_hsl( $rgb );
 
 =cut
 
@@ -341,7 +340,7 @@ The first dimension of the piddles holding the hsl and rgb values must be size 3
 
 Usage:
 
-	my $rgb = hsl_to_rgb( $hsl );
+    my $rgb = hsl_to_rgb( $hsl );
 
 =cut
 
@@ -392,7 +391,7 @@ The first dimension of the piddles holding the hsv and rgb values must be size 3
 
 Usage:
 
-	my $hsv = rgb_to_hsv( $rgb );
+    my $hsv = rgb_to_hsv( $rgb );
 
 =cut
 
@@ -443,7 +442,7 @@ The first dimension of the piddles holding the hsv and rgb values must be size 3
 
 Usage:
 
-	my $rgb = hsv_to_rgb( $hsv );
+    my $rgb = hsv_to_rgb( $hsv );
 
 =cut
 
@@ -463,10 +462,10 @@ BADDOC
 pp_def('xyY_to_xyz',
     Pars => 'double xyY(c=3); double [o]xyz(c=3)',
     Code => '
-		xyY2xyz($P(xyY), $P(xyz));
+        xyY2xyz($P(xyY), $P(xyz));
     ',
 
-	Doc => 'Internal function for white point calculation. Use it if you must.',
+    Doc => 'Internal function for white point calculation. Use it if you must.',
 
     HandleBad => 1,
     BadCode => '
@@ -478,7 +477,7 @@ pp_def('xyY_to_xyz',
             /* skip to the next hsl triple */
         }
         else {
-			xyY2xyz($P(xyY), $P(xyz));
+            xyY2xyz($P(xyY), $P(xyz));
         }
     ',
 );
@@ -500,11 +499,11 @@ pp_def('_rgb_to_xyz',
             /* skip to the next xyz triple */
         }
         else {
-        	rgb2xyz($P(rgb), $gamma(), $P(l), $P(m), $P(n), $P(xyz));
+            rgb2xyz($P(rgb), $gamma(), $P(l), $P(m), $P(n), $P(xyz));
         }
     ',
-	Doc => undef,
-	BadDoc => undef,
+    Doc => undef,
+    BadDoc => undef,
 );
 
 
@@ -524,94 +523,94 @@ pp_def('_xyz_to_rgb',
             /* skip to the next rgb triple */
         }
         else {
-        	xyz2rgb($P(xyz), $gamma(), $P(l), $P(m), $P(n), $P(rgb));
+            xyz2rgb($P(xyz), $gamma(), $P(l), $P(m), $P(n), $P(rgb));
         }
     ',
-	Doc => undef,
-	BadDoc => undef,
+    Doc => undef,
+    BadDoc => undef,
 );
 
 
 pp_def('_xyz_to_lab',
     Pars => 'double xyz(c=3); double w(d=2);  double [o]lab(c=3)',
     Code => '
-		/* construct white point */
-		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
-		double xyz_white[3];
-		xyY2xyz( &xyY[0], &xyz_white[0] );
+        /* construct white point */
+        double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+        double xyz_white[3];
+        xyY2xyz( &xyY[0], &xyz_white[0] );
 
-		threadloop %{
-	        xyz2lab( $P(xyz), &xyz_white[0], $P(lab) );
-		%}
+        threadloop %{
+            xyz2lab( $P(xyz), &xyz_white[0], $P(lab) );
+        %}
     ',
-	Doc => undef,
+    Doc => undef,
 
     HandleBad => 1,
     BadCode => '
-		/* construct white point */
-		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
-		double xyz_white[3];
-		xyY2xyz( &xyY[0], &xyz_white[0] );
+        /* construct white point */
+        double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+        double xyz_white[3];
+        xyY2xyz( &xyY[0], &xyz_white[0] );
 
-		threadloop %{
-			/* First check for bad values */
-			if ($ISBAD(xyz(c=>0)) || $ISBAD(xyz(c=>1)) || $ISBAD(xyz(c=>2))) {
-				loop (c) %{
-					$SETBAD(lab());
-				%}
-				/* skip to the next xyz triple */
-			}
-			else {
-				xyz2lab( $P(xyz), &xyz_white[0], $P(lab) );
-			}
-		%}
+        threadloop %{
+            /* First check for bad values */
+            if ($ISBAD(xyz(c=>0)) || $ISBAD(xyz(c=>1)) || $ISBAD(xyz(c=>2))) {
+                loop (c) %{
+                    $SETBAD(lab());
+                %}
+                /* skip to the next xyz triple */
+            }
+            else {
+                xyz2lab( $P(xyz), &xyz_white[0], $P(lab) );
+            }
+        %}
     ',
-	BadDoc => undef,
+    BadDoc => undef,
 );
 
 
 pp_def('_lab_to_xyz',
     Pars => 'double lab(c=3); double w(d=2);  double [o]xyz(c=3)',
     Code => '
-		/* construct white point */
-		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
-		double xyz_white[3];
-		xyY2xyz( &xyY[0], &xyz_white[0] );
+        /* construct white point */
+        double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+        double xyz_white[3];
+        xyY2xyz( &xyY[0], &xyz_white[0] );
 
-		threadloop %{
-	        lab2xyz( $P(lab), &xyz_white[0], $P(xyz) );
-		%}
+        threadloop %{
+            lab2xyz( $P(lab), &xyz_white[0], $P(xyz) );
+        %}
     ',
-	Doc => undef,
+    Doc => undef,
 
     HandleBad => 1,
     BadCode => '
-		/* construct white point */
-		double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
-		double xyz_white[3];
-		xyY2xyz( &xyY[0], &xyz_white[0] );
+        /* construct white point */
+        double xyY[3] = { $w(d=>0), $w(d=>1), 1.0 };
+        double xyz_white[3];
+        xyY2xyz( &xyY[0], &xyz_white[0] );
 
-		threadloop %{
-			/* First check for bad values */
-			if ($ISBAD(lab(c=>0)) || $ISBAD(lab(c=>1)) || $ISBAD(lab(c=>2))) {
-				loop (c) %{
-					$SETBAD(xyz());
-				%}
-				/* skip to the next lab triple */
-			}
-			else {
-				lab2xyz( $P(lab), &xyz_white[0], $P(xyz) );
-			}
-		%}
+        threadloop %{
+            /* First check for bad values */
+            if ($ISBAD(lab(c=>0)) || $ISBAD(lab(c=>1)) || $ISBAD(lab(c=>2))) {
+                loop (c) %{
+                    $SETBAD(xyz());
+                %}
+                /* skip to the next lab triple */
+            }
+            else {
+                lab2xyz( $P(lab), &xyz_white[0], $P(xyz) );
+            }
+        %}
     ',
-	BadDoc => undef,
+    BadDoc => undef,
 );
 
 
 pp_def('lab_to_lch',
     Pars => 'double lab(c=3); double [o]lch(c=3)',
     Code => '
-		lab2lch( $P(lab), $P(lch) );
+        lab2lch( $P(lab), $P(lch) );
     ',
 
     HandleBad => 1,
@@ -624,7 +623,7 @@ pp_def('lab_to_lch',
             /* skip to the next lch triple */
         }
         else {
-			lab2lch( $P(lab), $P(lch) );
+            lab2lch( $P(lab), $P(lch) );
         }
     ',
     Doc => <<'DOCUMENTATION',
@@ -641,7 +640,7 @@ The first dimension of the piddles holding the lab values must be size 3, i.e. t
 
 Usage:
 
-	my $lch = lab_to_lch( $lab );
+    my $lch = lab_to_lch( $lab );
 
 =cut
 
@@ -661,7 +660,7 @@ BADDOC
 pp_def('lch_to_lab',
     Pars => 'double lch(c=3); double [o]lab(c=3)',
     Code => '
-		lch2lab( $P(lch), $P(lab) );
+        lch2lab( $P(lch), $P(lab) );
     ',
 
     HandleBad => 1,
@@ -674,7 +673,7 @@ pp_def('lch_to_lab',
             /* skip to the next lab triple */
         }
         else {
-			lch2lab( $P(lch), $P(lab) );
+            lch2lab( $P(lch), $P(lab) );
         }
     ',
     Doc => <<'DOCUMENTATION',
@@ -691,7 +690,7 @@ The first dimension of the piddles holding the lch values must be size 3, i.e. t
 
 Usage:
 
-	my $lab = lch_to_lab( $lch );
+    my $lab = lch_to_lab( $lch );
 
 =cut
 
@@ -728,7 +727,7 @@ If C<rgb_to_xyz> encounters a bad value in any of the R, G, or B values the outp
 
 Usage:
 
-	my $xyz = rgb_to_xyz( $rgb, 'sRGB' );
+    my $xyz = rgb_to_xyz( $rgb, 'sRGB' );
 
 =cut
 
@@ -736,8 +735,8 @@ Usage:
 sub PDL::rgb_to_xyz {
     my ($rgb, $space) = @_;
 
-	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
-		if !$space;
+    croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+        if !$space;
 
     my @m = pdl( $RGB_SPACE->{$space}{m} )->dog;
 
@@ -761,7 +760,7 @@ If C<xyz_to_rgb> encounters a bad value in any of the X, Y, or Z values the outp
 
 Usage:
 
-	my $rgb = xyz_to_rgb( $xyz, 'sRGB' );
+    my $rgb = xyz_to_rgb( $xyz, 'sRGB' );
 
 =cut
 
@@ -769,8 +768,8 @@ Usage:
 sub PDL::xyz_to_rgb {
     my ($xyz, $space) = @_;
 
-	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
-		if !$space;
+    croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+        if !$space;
 
     my @mstar = pdl( $RGB_SPACE->{$space}{mstar} )->dog;
 
@@ -794,20 +793,20 @@ If C<xyz_to_lab> encounters a bad value in any of the X, Y, or Z values the outp
 
 Usage:
 
-	my $lab = xyz_to_lab( $xyz, 'sRGB' );
+    my $lab = xyz_to_lab( $xyz, 'sRGB' );
 
 =cut
 
 *xyz_to_lab = \&PDL::xyz_to_lab;
 sub PDL::xyz_to_lab {
-	my ($xyz, $space) = @_;
+    my ($xyz, $space) = @_;
 
-	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
-		if !$space;
+    croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+        if !$space;
 
-	my $w = pdl $WHITE_POINT->{ $RGB_SPACE->{$space}{white_point} };
+    my $w = pdl $RGB_SPACE->{$space}{white_point};
 
-	return _xyz_to_lab( $xyz, $w );
+    return _xyz_to_lab( $xyz, $w );
 }
 
 
@@ -827,20 +826,20 @@ If C<lab_to_xyz> encounters a bad value in any of the L, a, or b values the outp
 
 Usage:
 
-	my $xyz = lab_to_xyz( $lab, 'sRGB' );
+    my $xyz = lab_to_xyz( $lab, 'sRGB' );
 
 =cut
 
 *lab_to_xyz = \&PDL::lab_to_xyz;
 sub PDL::lab_to_xyz {
-	my ($lab, $space) = @_;
+    my ($lab, $space) = @_;
 
-	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
-		if !$space;
+    croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+        if !$space;
 
-	my $w = pdl $WHITE_POINT->{ $RGB_SPACE->{$space}{white_point} };
+    my $w = pdl $RGB_SPACE->{$space}{white_point};
 
-	return _lab_to_xyz( $lab, $w );
+    return _lab_to_xyz( $lab, $w );
 }
 
 
@@ -860,20 +859,20 @@ If C<rgb_to_lch> encounters a bad value in any of the R, G, or B values the outp
 
 Usage:
 
-	my $lch = rgb_to_lch( $rgb, 'sRGB' );
+    my $lch = rgb_to_lch( $rgb, 'sRGB' );
 
 =cut
 
 *rgb_to_lch = \&PDL::rgb_to_lch;
 sub PDL::rgb_to_lch {
-	my ($rgb, $space) = @_;
+    my ($rgb, $space) = @_;
 
-	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
-		if !$space;
+    croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+        if !$space;
 
-	my $lab = xyz_to_lab( rgb_to_xyz( $rgb, $space ), $space );
+    my $lab = xyz_to_lab( rgb_to_xyz( $rgb, $space ), $space );
 
-	return lab_to_lch( $lab );
+    return lab_to_lch( $lab );
 }
 
 
@@ -893,22 +892,80 @@ If C<lch_to_rgb> encounters a bad value in any of the L, C, or H values the outp
 
 Usage:
 
-	my $rgb = lch_to_rgb( $lch, 'sRGB' );
+    my $rgb = lch_to_rgb( $lch, 'sRGB' );
 
 =cut
 
 *lch_to_rgb = \&PDL::lch_to_rgb;
 sub PDL::lch_to_rgb {
-	my ($lch, $space) = @_;
+    my ($lch, $space) = @_;
 
-	croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
-		if !$space;
+    croak "Please specify RGB Space ('sRGB' for generic JPEG images)!"
+        if !$space;
 
-	my $xyz = lab_to_xyz( lch_to_lab( $lch ), $space );
+    my $xyz = lab_to_xyz( lch_to_lab( $lch ), $space );
 
-	return xyz_to_rgb( $xyz, $space );
+    return xyz_to_rgb( $xyz, $space );
 }
 
+=head2 add_rgb_space
+
+Supports adding custom RGB space definitions.
+
+Usage:
+
+    my %custom_space = (
+        custom_1 => {
+          'gamma' => '2.2',
+          'm' => [
+                   [
+                     '0.467384242424242',
+                     '0.240995',
+                     '0.0219086363636363'
+                   ],
+                   [
+                     '0.294454030769231',
+                     '0.683554',
+                     '0.0736135076923076'
+                   ],
+                   [
+                     '0.18863',
+                     '0.075452',
+                     '0.993451333333334'
+                   ]
+                 ],
+          'mstar' => [
+                       [
+                         '2.74565437614039',
+                         '-0.969256810842655',
+                         '0.0112706581772173'
+                       ],
+                       [
+                         '-1.1358911781912',
+                         '1.87599300082369',
+                         '-0.113958877125197'
+                       ],
+                       [
+                         '-0.435056564214666',
+                         '0.0415556222493375',
+                         '1.01310694059653'
+                       ]
+                     ],
+          'white_point' => [
+                             '0.312713',
+                             '0.329016'
+                           ],
+        },
+        custom_2 => { ... },
+    );
+
+    add_rgb_space( \%custom_space );
+
+    my $rgb = lch_to_rgb( $lch, 'custom_1' );
+
+=cut
+
+*add_rgb_space = \&PDL::Graphics::ColorSpace::RGBSpace::add_rgb_space;
 
 
 =head1 SEE ALSO

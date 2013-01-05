@@ -170,5 +170,61 @@ sub tapprox {
 	is( tapprox( sum(abs($a_rgb - $rgb)), 0 ), 1, 'lch_to_rgb sRGB with bad value' ) or diag($a_rgb, $rgb);
 }
 
+# add_rgb_space
+{
+	my %custom_space = (
+		custom_1 => {
+          'gamma' => '2.2',
+          'm' => [
+                   [
+                     '0.467384242424242',
+                     '0.240995',
+                     '0.0219086363636363'
+                   ],
+                   [
+                     '0.294454030769231',
+                     '0.683554',
+                     '0.0736135076923076'
+                   ],
+                   [
+                     '0.18863',
+                     '0.075452',
+                     '0.993451333333334'
+                   ]
+                 ],
+          'mstar' => [
+                       [
+                         '2.74565437614039',
+                         '-0.969256810842655',
+                         '0.0112706581772173'
+                       ],
+                       [
+                         '-1.1358911781912',
+                         '1.87599300082369',
+                         '-0.113958877125197'
+                       ],
+                       [
+                         '-0.435056564214666',
+                         '0.0415556222493375',
+                         '1.01310694059653'
+                       ]
+                     ],
+          'white_point' => [
+                             '0.312713',
+                             '0.329016'
+                           ],
+		},
+	);
+
+	PDL::Graphics::ColorSpace::add_rgb_space( \%custom_space );
+
+	my $rgb = pdl([25, 10, 243], [0,0,1]) / 255;
+
+	# custom_1 is in fact copied from BruceRGB
+	my $a_lch = rgb_to_lch($rgb, 'BruceRGB');
+	my $lch = rgb_to_lch($rgb, 'custom_1');
+	is( tapprox( sum(abs($a_lch - $lch)), 0 ), 1, 'rgb_to_lch with add_rgb_space' ) or diag($a_lch, $lch);
+}
+
 
 done_testing();
