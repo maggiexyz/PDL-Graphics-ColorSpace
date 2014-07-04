@@ -16,7 +16,7 @@ WriteMakefile( %hash,
 	},
     PREREQ_PM => {
         'Test::More' => 0,
-        'PDL'        => '2.4.4',
+        'PDL'        => 0,
     },
     dist                          => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
 );
