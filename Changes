@@ -1,4 +1,4 @@
-Revision history for PDL-Graphics-ColorSpace
+- opt in to PDL 2.058+ multi-C
 
 0.1.0	01-04-2013
 		Added support for custom RGB space.
