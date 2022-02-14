@@ -19,6 +19,18 @@ WriteMakefile( %hash,
         'PDL'        => '2.074', # multi-C etc
     },
     dist => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+    META_MERGE => {
+       "meta-spec" => { version => 2 },
+       resources => {
+          bugtracker  => {web=>'https://github.com/PDLPorters/PDL-Graphics-ColorSpace/issues'},
+          repository  => {
+             url => 'git://github.com/PDLPorters/PDL-Graphics-ColorSpace.git',
+             type => 'git',
+             web => 'https://github.com/PDLPorters/PDL-Graphics-ColorSpace',
+          },
+          x_IRC => 'irc://irc.perl.org/#pdl',
+       },
+    },
 );
 
 sub MY::postamble {pdlpp_postamble($pack)};
