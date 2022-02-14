@@ -1,0 +1,6 @@
+ColorSpace.bs
+ColorSpace.c
+ColorSpace.pm
+ColorSpace.xs
+**/pp-*.[co]*
+**/*.o
