@@ -1,3 +1,5 @@
+- more accurate dependencies
+
 0.200 2022-02-14
 - opt in to PDL 2.058+ multi-C
 - add GitHub repo metadata

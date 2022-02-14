@@ -14,8 +14,13 @@ WriteMakefile( %hash,
       'ColorSpace.pm'           => '$(INST_LIBDIR)/ColorSpace.pm',
       'ColorSpace/RGBSpace.pm'  => '$(INST_LIBDIR)/ColorSpace/RGBSpace.pm',
     },
+    CONFIGURE_REQUIRES => {
+        'PDL'        => '2.074', # multi-C etc
+    },
+    TEST_REQUIRES => {
+        'Test::More' => '0.88',
+    },
     PREREQ_PM => {
-        'Test::More' => 0,
         'PDL'        => '2.074', # multi-C etc
     },
     dist => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
