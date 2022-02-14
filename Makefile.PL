@@ -3,7 +3,7 @@ use warnings;
 use PDL::Core::Dev;
 use ExtUtils::MakeMaker;
 
-my $pack = [qw(color_space.pp ColorSpace PDL::Graphics::ColorSpace), undef, 1];
+my $pack = [qw(color_space.pd ColorSpace PDL::Graphics::ColorSpace), undef, 1];
 my %hash = pdlpp_stdargs($pack);
 $hash{OBJECT} .= ' color_space$(OBJ_EXT)';
 $hash{clean}{FILES} .= ' color_space$(OBJ_EXT)';

@@ -3,7 +3,7 @@ Changes
 README
 Makefile.PL
 ColorSpace/RGBSpace.pm
-color_space.pp
+color_space.pd
 color_space.c
 color_space.h
 t/color_space.t
