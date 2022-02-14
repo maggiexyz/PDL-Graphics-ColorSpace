@@ -23,7 +23,6 @@ WriteMakefile( %hash,
     PREREQ_PM => {
         'PDL'        => '2.074', # multi-C etc
     },
-    dist => { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
     META_MERGE => {
        "meta-spec" => { version => 2 },
        resources => {
