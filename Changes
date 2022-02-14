@@ -1,3 +1,4 @@
+0.200 2022-02-14
 - opt in to PDL 2.058+ multi-C
 - add GitHub repo metadata
 
@@ -17,4 +18,3 @@
 
 0.0.6	02-01-2012
 		First version released on an unsuspecting world.
-
